@@ -1,0 +1,15 @@
+import type { User } from "./user";
+
+export interface AuthState {
+  accessToken: string | null;
+  user: User | null;
+  loading: boolean;
+
+  signUp: (
+    firstName: string,
+    lastName: string,
+    username: string,
+    email: string,
+    password: string
+  ) => Promise<void>;
+}
