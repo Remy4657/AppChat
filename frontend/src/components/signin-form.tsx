@@ -9,6 +9,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 const signInSchema = z.object({
   username: z.string().min(3, "Tên đăng nhập phải có ít nhất 3 ký tự"),
@@ -29,9 +31,15 @@ export function SigninForm({
     resolver: zodResolver(signInSchema),
   });
 
+  const router = useRouter();
+  const signIn = useAuthStore((state) => state.signIn);
+
   const onSubmit = async (data: SignInFormValues) => {
-    const { username, password } = data;
-    // await signIn(username, password);
+    try {
+      const { username, password } = data;
+      await signIn(username, password);
+      router.push("/");
+    } catch (error) {}
   };
 
   return (

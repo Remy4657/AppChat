@@ -8,11 +8,23 @@ export const authService = {
     email: string,
     password: string
   ) => {
-    const res = await api.post(
-      "/auth/signup",
-      { firstname, lastname, username, password, email },
-      { withCredentials: true }
-    );
+    const res = await api.post("/auth/signup", {
+      firstname,
+      lastname,
+      username,
+      email,
+      password,
+    });
+
+    return res?.data;
+  },
+  signIn: async (username: string, password: string) => {
+    const res = await api.post("/auth/signin", { username, password });
+
+    return res?.data;
+  },
+  signOut: async () => {
+    const res = await api.post("/auth/signout");
 
     return res?.data;
   },

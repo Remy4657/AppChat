@@ -38,10 +38,11 @@ export function SignupForm({
   const signUp = useAuthStore((state) => state.signUp);
 
   const onSubmit = async (data: SignUpFormValues) => {
-    const { firstname, lastname, username, email, password } = data;
-    await signUp(firstname, lastname, username, email, password);
-    router.push("/signin");
-    // navigate("/signin");
+    try {
+      const { firstname, lastname, username, email, password } = data;
+      await signUp(firstname, lastname, username, email, password);
+      router.push("/signin");
+    } catch (error) {}
   };
 
   return (

@@ -1,10 +1,20 @@
+"use client";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 export default function Home() {
-  const a = () => {
-    console.log("hello world");
+  const router = useRouter();
+  const { signOut } = useAuthStore();
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      router.push("/signin");
+    } catch (error) {}
   };
+
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
@@ -64,7 +74,9 @@ export default function Home() {
           </a>
         </div>
         <div className="flex min-h-svh items-center justify-center">
-          <Button className="text-red-500">Click me</Button>
+          <Button onClick={handleLogout} className="text-red-500">
+            Logout
+          </Button>
         </div>
       </main>
     </div>
