@@ -1,4 +1,5 @@
 import express from "express"
+import cookieParser from "cookie-parser";
 import dotenv from "dotenv"
 import cors from "cors"
 
@@ -16,6 +17,7 @@ const PORT = process.env.PORT || 5001
 
 //middlewares
 app.use(express.json())
+app.use(cookieParser())
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 //public route
 app.use("/api/auth", authRoute)

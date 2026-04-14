@@ -1,5 +1,8 @@
 import * as userService from "../services/authService.js";
 
+const ACCESS_TOKEN_TTL = "30m"; // thuờng là dưới 15m
+const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000; // 14 ngày
+
 export const register = async (req, res) => {
     try {
         const { username, password, email, firstName, lastName } = req.body;
@@ -33,11 +36,17 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
     try {
         const { user, accessToken, refreshToken } = await userService.loginUser(req.body)
+        res.cookie("accessToken", accessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "Strict",
+            maxAge: ACCESS_TOKEN_TTL, // 7 ngày
+        });
         res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "Strict",
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 ngày
+            maxAge: REFRESH_TOKEN_TTL, // 7 ngày
         });
         res.status(200).json({
             message: "Login successful",
@@ -62,6 +71,11 @@ export const logout = async (req, res) => {
         await userService.logoutUser(refreshToken);
 
         res.clearCookie("refreshToken", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "Strict",
+        });
+        res.clearCookie("accessToken", {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "Strict",

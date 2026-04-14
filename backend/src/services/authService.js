@@ -25,6 +25,8 @@ export const registerUser = async (data) => {
     return user;
 };
 export const loginUser = async (data) => {
+    const ACCESS_TOKEN_TTL = "1h"; // thuờng là dưới 15m
+    const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000; // 14 ngày
     const { username, password } = data;
 
     // check required fields
@@ -46,7 +48,7 @@ export const loginUser = async (data) => {
         throw new Error("Invalid username or password");
     }
     const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-        expiresIn: "1h",
+        expiresIn: ACCESS_TOKEN_TTL,
     });
 
     const refreshToken = crypto.randomBytes(64).toString("hex");
@@ -54,7 +56,7 @@ export const loginUser = async (data) => {
     await Session.create({
         userId: user._id,
         refreshToken,
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 ngày
+        expiresAt: new Date(Date.now() + REFRESH_TOKEN_TTL), // 7 ngày
     });
 
     // không trả password về client
