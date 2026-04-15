@@ -4,6 +4,9 @@ import bycrypt from "bcrypt";
 import crypto from "crypto";
 import Session from "../models/Session.js";
 
+const ACCESS_TOKEN_TTL = "30s"; // thuờng là dưới 15m
+const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000; // 14 ngày
+
 export const registerUser = async (data) => {
     const { username, email } = data;
 
@@ -25,8 +28,7 @@ export const registerUser = async (data) => {
     return user;
 };
 export const loginUser = async (data) => {
-    const ACCESS_TOKEN_TTL = "1h"; // thuờng là dưới 15m
-    const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000; // 14 ngày
+
     const { username, password } = data;
 
     // check required fields
@@ -70,4 +72,21 @@ export const loginUser = async (data) => {
 };
 export const logoutUser = async (refreshToken) => {
     await Session.findOneAndDelete({ refreshToken });
+}
+export const refreshToken = async (refreshToken) => {
+    if (!refreshToken) {
+        throw new Error("Token không tồn tại");
+    }
+
+    const session = await Session.findOne({ refreshToken });
+
+    if (!session || session.expiresAt < new Date()) {
+        throw new Error("Token không hợp lệ hoặc đã hết hạn");
+    }
+
+    const accessToken = jwt.sign({ userId: session.userId }, process.env.JWT_SECRET, {
+        expiresIn: ACCESS_TOKEN_TTL,
+    });
+    return { accessToken };
+
 }

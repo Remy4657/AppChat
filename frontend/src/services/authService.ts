@@ -28,4 +28,12 @@ export const authService = {
 
     return res?.data;
   },
+  fetchMe: async () => {
+    const res = await api.get("/users/me");
+    return res?.data;
+  },
+  refreshToken: async () => {
+    const res = await api.post("/auth/refresh");
+    return res?.data;
+  },
 };

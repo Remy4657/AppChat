@@ -6,7 +6,7 @@ import { useAuthStore } from "@/stores/useAuthStore";
 
 export default function Home() {
   const router = useRouter();
-  const { signOut } = useAuthStore();
+  const { signOut, fetchMe, user } = useAuthStore();
 
   const handleLogout = async () => {
     try {
@@ -74,8 +74,17 @@ export default function Home() {
           </a>
         </div>
         <div className="flex min-h-svh items-center justify-center">
+          <span className="text-red-600">{user?.username}</span>
           <Button onClick={handleLogout} className="text-red-500">
             Logout
+          </Button>
+          <Button
+            onClick={async () => {
+              await fetchMe();
+            }}
+            className="text-red-500"
+          >
+            Test Api
           </Button>
         </div>
       </main>

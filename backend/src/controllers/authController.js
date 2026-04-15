@@ -1,6 +1,7 @@
-import * as userService from "../services/authService.js";
+import * as authService from "../services/authService.js";
 
-const ACCESS_TOKEN_TTL = "30m"; // thuờng là dưới 15m
+
+const ACCESS_TOKEN_TTL = 30 * 1000; // thuờng là dưới 15m
 const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000; // 14 ngày
 
 export const register = async (req, res) => {
@@ -14,7 +15,7 @@ export const register = async (req, res) => {
             });
         }
 
-        const user = await userService.registerUser({
+        const user = await authService.registerUser({
             username,
             password,
             email,
@@ -35,12 +36,12 @@ export const register = async (req, res) => {
 };
 export const login = async (req, res) => {
     try {
-        const { user, accessToken, refreshToken } = await userService.loginUser(req.body)
+        const { user, accessToken, refreshToken } = await authService.loginUser(req.body)
         res.cookie("accessToken", accessToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "Strict",
-            maxAge: ACCESS_TOKEN_TTL, // 7 ngày
+            maxAge: ACCESS_TOKEN_TTL,
         });
         res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
@@ -68,7 +69,7 @@ export const logout = async (req, res) => {
             });
         }
 
-        await userService.logoutUser(refreshToken);
+        await authService.logoutUser(refreshToken);
 
         res.clearCookie("refreshToken", {
             httpOnly: true,
@@ -87,6 +88,27 @@ export const logout = async (req, res) => {
     } catch (error) {
         return res.status(400).json({
             message: `Lỗi khi đăng xuất: ${error.message}`,
+        });
+    }
+}
+export const refreshToken = async (req, res) => {
+    try {
+        const refreshToken = req.cookies?.refreshToken;
+        const { accessToken } = await authService.refreshToken(refreshToken);
+
+        res.cookie("accessToken", accessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "Strict",
+            maxAge: ACCESS_TOKEN_TTL,
+        });
+
+        return res.status(200).json(
+            accessToken
+        );
+    } catch (error) {
+        return res.status(400).json({
+            message: `Lỗi khi refresh token: ${error.message}`,
         });
     }
 }

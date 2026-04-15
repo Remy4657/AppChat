@@ -1,22 +1,28 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export default function proxy(request: NextRequest) {
+const publicRoutes = ["/signin", "/signup"];
+const protectedRoutes = ["/"];
+
+export function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
   const accessToken = request.cookies.get("accessToken")?.value;
-  const urlAuth = ["/sign-in", "/sign-up"];
-  const isSkipAuthPage = urlAuth.includes(request.nextUrl.pathname);
 
-  if (!accessToken && !isSkipAuthPage) {
-    return NextResponse.redirect(new URL("/signin", request.url));
+  // Kiểm tra có phải public route không
+  const isPublic = publicRoutes.includes(pathname);
+
+  if (isPublic && accessToken) {
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
-  if (accessToken && isSkipAuthPage) {
-    return NextResponse.redirect(new URL("/", request.url));
+  // Route cần bảo vệ
+  const isProtected = protectedRoutes.includes(pathname);
+  if (isProtected && !accessToken) {
+    return NextResponse.redirect(new URL("/signin", request.url));
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!_next|api|favicon.ico).*)"],
 };
