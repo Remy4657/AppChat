@@ -17,18 +17,19 @@ export default function RefreshTokenProvider({
   const hasInit = useRef(false);
 
   useEffect(() => {
-    // if (pathname === "/signin" || pathname === "/signup") {
-    //   setStarting(false);
-    //   return;
-    // }
+    if (pathname === "/signin" || pathname === "/signup") {
+      setStarting(false);
+      return;
+    }
     if (hasInit.current) return;
     hasInit.current = true;
 
     const init = async () => {
       try {
-        if (!accessToken) {
-          await refreshToken();
-        }
+        await refreshToken();
+      } catch (error) {
+        // console.error("Refresh token failed:", error);
+        router.push("/signin"); // chuyển hướng về trang đăng nhập nếu refresh token thất bại
       } finally {
         setStarting(false);
       }

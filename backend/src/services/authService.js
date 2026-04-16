@@ -84,9 +84,9 @@ export const refreshToken = async (refreshToken) => {
         throw new Error("Token không hợp lệ hoặc đã hết hạn");
     }
 
-    const accessToken = jwt.sign({ userId: session.userId }, process.env.JWT_SECRET, {
+    const newAccessToken = jwt.sign({ userId: session.userId }, process.env.JWT_SECRET, {
         expiresIn: ACCESS_TOKEN_TTL,
     });
-    return { accessToken };
+    return { newAccessToken };
 
 }

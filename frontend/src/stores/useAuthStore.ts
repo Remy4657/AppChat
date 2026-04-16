@@ -3,7 +3,6 @@ import { devtools } from "zustand/middleware";
 import { toast } from "sonner";
 import type { AuthState } from "@/types/store";
 import { authService } from "@/services/authService";
-import { fi } from "zod/locales";
 
 export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
   devtools((set, get) => ({
@@ -66,6 +65,7 @@ export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           "API test thất bại: "
         );
+        throw error; // để component biết fetch me thất bại, không throw new vì đã có interceptor của axios handle rồi
       } finally {
         set({ loading: false });
       }
@@ -81,7 +81,8 @@ export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
         await fetchMe();
       } catch (error) {
         get().clearState();
-        toast.error("Phiên đã hết hạn. Vui lòng đăng nhập lại.");
+        toast.error("Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại: ");
+        throw error; // để component biết refresh token thất bại
       } finally {
         set({ loading: false });
       }

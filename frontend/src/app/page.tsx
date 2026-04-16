@@ -80,7 +80,11 @@ export default function Home() {
           </Button>
           <Button
             onClick={async () => {
-              await fetchMe();
+              try {
+                await fetchMe();
+              } catch (error) {
+                router.push("/signin");
+              }
             }}
             className="text-red-500"
           >

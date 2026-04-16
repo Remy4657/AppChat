@@ -94,9 +94,10 @@ export const logout = async (req, res) => {
 export const refreshToken = async (req, res) => {
     try {
         const refreshToken = req.cookies?.refreshToken;
-        const { accessToken } = await authService.refreshToken(refreshToken);
 
-        res.cookie("accessToken", accessToken, {
+        const { newAccessToken } = await authService.refreshToken(refreshToken);
+
+        res.cookie("accessToken", newAccessToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "Strict",
@@ -104,9 +105,19 @@ export const refreshToken = async (req, res) => {
         });
 
         return res.status(200).json(
-            accessToken
+            newAccessToken
         );
     } catch (error) {
+        res.clearCookie("refreshToken", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "Strict",
+        });
+        res.clearCookie("accessToken", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "Strict",
+        });
         return res.status(400).json({
             message: `Lỗi khi refresh token: ${error.message}`,
         });
