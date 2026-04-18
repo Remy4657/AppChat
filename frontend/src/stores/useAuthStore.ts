@@ -25,7 +25,7 @@ export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
         );
         toast.success("Đăng ký thành công!");
       } catch (error) {
-        //toast.error("Đăng ký thất bại. Vui lòng thử lại.");
+        // toast.error("Đăng ký thất bại. Vui lòng thử lại."); // đã thông báo ở axuios interceptor nên không cần thông báo ở đây nữa để tránh bị trùng lặp thông báo lỗi
         throw error; // để component biết đăng ký thất bại, không throw new vì đã có interceptor của axios handle rồi
       } finally {
         set({ loading: false });
@@ -38,7 +38,6 @@ export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
         const { accessToken } = data;
         get().setAccessToken(accessToken);
         await get().fetchMe();
-
         toast.success("Đăng nhập thành công!");
       } catch (error) {
         throw error; // để component biết đăng nhập thất bại, không throw new vì đã có interceptor của axios handle rồi

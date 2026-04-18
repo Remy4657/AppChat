@@ -1,4 +1,6 @@
 
+
+
 export const fetchMe = async (req, res) => {
     try {
         const user = req.user; // Thông tin người dùng đã được xác thực từ middleware
@@ -9,3 +11,4 @@ export const fetchMe = async (req, res) => {
         });
     }
 }
+
