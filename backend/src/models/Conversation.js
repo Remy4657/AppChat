@@ -71,6 +71,7 @@ const conversationSchema = new mongoose.Schema(
         lastMessageAt: {
             type: Date,
         },
+        // đây là mảng userId của những người đã xem tin nhắn cuối cùng, dùng để xác định xem người dùng nào đã đọc tin nhắn mới nhất và cập nhật số lượng tin nhắn chưa đọc cho từng người tham gia
         seenBy: [
             {
                 type: mongoose.Schema.Types.ObjectId,
@@ -81,6 +82,7 @@ const conversationSchema = new mongoose.Schema(
             type: lastMessageSchema, // 
             default: null,
         },
+        // lưu số lượng tin nhắn chưa đọc của từng người tham gia, key là userId và value là số lượng tin nhắn chưa đọc. Mỗi khi có tin nhắn mới, sẽ tăng số lượng này lên 1 cho tất cả người tham gia trừ người gửi, và khi người dùng xem tin nhắn, sẽ reset về 0
         unreadCounts: {
             type: Map,
             of: Number,
