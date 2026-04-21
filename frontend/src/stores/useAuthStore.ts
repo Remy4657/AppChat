@@ -34,8 +34,7 @@ export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
     signIn: async (username, password) => {
       set({ loading: true });
       try {
-        const { data } = await authService.signIn(username, password);
-        const { accessToken } = data;
+        const { accessToken } = await authService.signIn(username, password);
         get().setAccessToken(accessToken);
         await get().fetchMe();
         toast.success("Đăng nhập thành công!");

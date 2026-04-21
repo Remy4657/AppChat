@@ -36,7 +36,7 @@ export const register = async (req, res) => {
 };
 export const login = async (req, res) => {
     try {
-        const { user, accessToken, refreshToken } = await authService.loginUser(req.body)
+        const { accessToken, refreshToken } = await authService.loginUser(req.body)
         res.cookie("accessToken", accessToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
@@ -51,7 +51,7 @@ export const login = async (req, res) => {
         });
         res.status(200).json({
             message: "Login successful",
-            data: { user, accessToken },
+            accessToken,
         });
     } catch (error) {
         return res.status(400).json({

@@ -2,6 +2,8 @@ import express from "express"
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv"
 import cors from "cors"
+import swaggerUi from "swagger-ui-express";
+import fs from "fs";
 
 import connectDB from "./libs/db.js"
 import authRoute from "./routes/authRoutes.js"
@@ -22,6 +24,15 @@ const PORT = process.env.PORT || 5001
 app.use(express.json())
 app.use(cookieParser())
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
+
+// swagger
+const swaggerDocument = JSON.parse(fs.readFileSync("./src/swagger.json", "utf8"));
+// swaggerUi.setup(swaggerDocument, {
+//     swaggerOptions: {
+//         withCredentials: true
+//     }
+// });
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 //public route
 app.use("/api/auth", authRoute)

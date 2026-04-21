@@ -25,7 +25,11 @@ const userSchema = new mongoose.Schema(
             lowercase: true,
             trim: true,
         },
-
+        displayName: {
+            type: String,
+            required: true,
+            trim: true,
+        },
         firstName: {
             type: String,
             trim: true,
@@ -34,6 +38,20 @@ const userSchema = new mongoose.Schema(
         lastName: {
             type: String,
             trim: true,
+        },
+        avatarUrl: {
+            type: String, // link CDN để hiển thị hình
+        },
+        avatarId: {
+            type: String, // Cloudinary public_id để xoá hình
+        },
+        bio: {
+            type: String,
+            maxlength: 500, // tuỳ
+        },
+        phone: {
+            type: String,
+            sparse: true, // cho phép null, nhưng không được trùng
         },
     },
     {
