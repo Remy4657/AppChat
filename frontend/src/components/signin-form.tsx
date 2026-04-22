@@ -11,6 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { useEffect } from "react";
 
 const signInSchema = z.object({
   username: z.string().min(3, "Tên đăng nhập phải có ít nhất 3 ký tự"),
@@ -19,10 +20,7 @@ const signInSchema = z.object({
 
 type SignInFormValues = z.infer<typeof signInSchema>;
 
-export function SigninForm({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+export function SigninForm() {
   const {
     register,
     handleSubmit,
@@ -41,9 +39,13 @@ export function SigninForm({
       router.push("/");
     } catch (error) {}
   };
+  console.log("loading:");
+  useEffect(() => {
+    console.log("signIn changed:");
+  }, [signIn, register, handleSubmit, errors, isSubmitting]);
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn("flex flex-col gap-6")}>
       <Card className="overflow-hidden p-0 border-border">
         <CardContent className="grid p-0 md:grid-cols-2">
           <form className="p-6 md:p-8" onSubmit={handleSubmit(onSubmit)}>

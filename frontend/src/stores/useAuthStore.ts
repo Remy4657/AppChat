@@ -3,7 +3,7 @@ import { devtools } from "zustand/middleware";
 import { toast } from "sonner";
 import type { AuthState } from "@/types/store";
 import { authService } from "@/services/authService";
-
+import { useChatStore } from "./useChatStore";
 export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
   devtools((set, get) => ({
     accessToken: null,
@@ -37,6 +37,7 @@ export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
         const { accessToken } = await authService.signIn(username, password);
         get().setAccessToken(accessToken);
         await get().fetchMe();
+        useChatStore.getState().fetchConversations();
         toast.success("Đăng nhập thành công!");
       } catch (error) {
         throw error; // để component biết đăng nhập thất bại, không throw new vì đã có interceptor của axios handle rồi
@@ -56,7 +57,7 @@ export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
       try {
         const user = await authService.fetchMe();
         set({ user });
-        toast.success("API test thành công!");
+        // toast.success("API test thành công!");
       } catch (error) {
         set({ user: null, accessToken: null, loading: false });
         toast.error(

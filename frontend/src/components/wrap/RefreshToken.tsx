@@ -13,7 +13,7 @@ export default function RefreshTokenProvider({
   const pathname = usePathname();
 
   const [starting, setStarting] = useState(true);
-  const { accessToken, loading, refreshToken } = useAuthStore();
+  const refreshToken = useAuthStore((state) => state.refreshToken);
   const hasInit = useRef(false);
 
   useEffect(() => {
@@ -28,7 +28,6 @@ export default function RefreshTokenProvider({
       try {
         await refreshToken();
       } catch (error) {
-        // console.error("Refresh token failed:", error);
         router.push("/signin"); // chuyển hướng về trang đăng nhập nếu refresh token thất bại
       } finally {
         setStarting(false);
@@ -37,7 +36,7 @@ export default function RefreshTokenProvider({
     init();
   }, []);
 
-  if (starting || loading) {
+  if (starting) {
     return <div>Loading...</div>;
   }
   return children;

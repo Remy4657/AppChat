@@ -26,7 +26,7 @@ export default {
         foreground: "hsl(var(--foreground))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          foreground: "hsl(var(--primary-foreground))", // cách dùng class:
           glow: "hsl(var(--primary-glow))",
         },
         secondary: {
@@ -115,5 +115,5 @@ export default {
       },
     },
   },
-  //plugins: [tailwindcssAnimate],
+  plugins: [tailwindcssAnimate],
 } satisfies Config;
