@@ -18,10 +18,10 @@ export default function RefreshTokenProvider({
 
   useEffect(() => {
     if (pathname === "/signin" || pathname === "/signup") {
-      setStarting(false);
       return;
     }
     if (hasInit.current) return;
+
     hasInit.current = true;
 
     const init = async () => {
@@ -36,8 +36,8 @@ export default function RefreshTokenProvider({
     init();
   }, []);
 
-  if (starting) {
-    return <div>Loading...</div>;
-  }
+  // if (starting) {
+  //   return <div>Loading...</div>;
+  // }
   return children;
 }

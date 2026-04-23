@@ -9,7 +9,7 @@ interface GroupChatAvatarProps {
 
 const GroupChatAvatar = ({ participants, type }: GroupChatAvatarProps) => {
   const avatars = [];
-  const limit = Math.min(participants.length, 4);
+  const limit = Math.min(participants.length, 4); // giới hạn hiển thị tối đa 4 avatar
 
   for (let i = 0; i < limit; i++) {
     const member = participants[i];

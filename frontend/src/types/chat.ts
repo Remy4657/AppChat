@@ -35,7 +35,7 @@ export interface Conversation {
   lastMessageAt: string;
   seenBy: SeenUser[];
   lastMessage: LastMessage | null;
-  unreadCounts: Record<string, number>; // key = userId, value = unread count
+  unreadCounts: Record<string, number>; // key = userId, value = unread count, data trả về có dạng: { userId: unreadCount }
   createdAt: string;
   updatedAt: string;
 }

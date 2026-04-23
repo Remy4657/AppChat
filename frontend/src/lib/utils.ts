@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+// hàm cn để kết hợp các className lại với nhau, sử dụng clsx để xử lý các giá trị class và twMerge để gộp các class trùng lặp lại thành một
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -25,5 +26,39 @@ export const formatOnlineTime = (date: Date) => {
     return `${diffMonths}m`; // 1m, 2m, 11m
   } else {
     return `${diffYears}y`; // 1y, 2y
+  }
+};
+
+export const formatMessageTime = (date: Date) => {
+  const now = new Date();
+
+  const isToday =
+    date.getDate() === now.getDate() &&
+    date.getMonth() === now.getMonth() &&
+    date.getFullYear() === now.getFullYear();
+
+  const yesterday = new Date();
+  yesterday.setDate(now.getDate() - 1);
+  const isYesterday =
+    date.getDate() === yesterday.getDate() &&
+    date.getMonth() === yesterday.getMonth() &&
+    date.getFullYear() === yesterday.getFullYear();
+
+  const timeStr = date.toLocaleTimeString("vi-VN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+
+  if (isToday) {
+    return timeStr; // ví dụ: "14:35"
+  } else if (isYesterday) {
+    return `Hôm qua ${timeStr}`; // ví dụ: "Hôm qua 23:10"
+  } else if (date.getFullYear() === now.getFullYear()) {
+    return `${date.getDate()}/${date.getMonth() + 1} ${timeStr}`; // ví dụ: "22/9 09:15"
+  } else {
+    return `${date.getDate()}/${
+      date.getMonth() + 1
+    }/${date.getFullYear()} ${timeStr}`; // ví dụ: "15/12/2023 18:40"
   }
 };

@@ -25,6 +25,7 @@ const DirectMessageCard = ({ convo }: { convo: Conversation }) => {
 
   const unreadCount = convo.unreadCounts[user._id];
   const lastMessage = convo.lastMessage?.content ?? "";
+  const onlineUsers = "true";
 
   const handleSelectConversation = async (id: string) => {
     setActiveConversation(id);
@@ -52,11 +53,11 @@ const DirectMessageCard = ({ convo }: { convo: Conversation }) => {
             name={otherUser.displayName ?? ""}
             avatarUrl={otherUser.avatarUrl ?? undefined}
           />
-          {/* <StatusBadge
+          <StatusBadge
             status={
               onlineUsers.includes(otherUser?._id ?? "") ? "online" : "offline"
             }
-          /> */}
+          />
           {unreadCount > 0 && <UnreadCountBadge unreadCount={unreadCount} />}
         </>
       }

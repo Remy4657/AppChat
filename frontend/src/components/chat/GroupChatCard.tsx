@@ -21,6 +21,7 @@ const GroupChatCard = ({ convo }: { convo: Conversation }) => {
   const handleSelectConversation = async (id: string) => {
     setActiveConversation(id);
     if (!messages[id]) {
+      // nếu chưa có tin nhắn nào được load cho cuộc trò chuyện này
       await fetchMessages();
     }
   };

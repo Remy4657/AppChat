@@ -24,12 +24,15 @@ import {
 } from "@/components/ui/sidebar";
 import { Moon, Sun } from "lucide-react";
 import { Switch } from "../ui/switch";
+import ConversationSkeleton from "../skeleton/ConversationSkeleton";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useThemeStore } from "@/stores/useThemeStore";
+import { useChatStore } from "@/stores/useChatStore";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { isDark, toggleTheme } = useThemeStore();
-  const { user } = useAuthStore();
+  const user = useAuthStore((state) => state.user);
+  const { convoLoading } = useChatStore();
   return (
     <Sidebar variant="inset" {...props}>
       {/* Header */}
@@ -72,7 +75,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             {/* <NewGroupChatModal /> */}
           </div>
 
-          <SidebarGroupContent>{<GroupChatList />}</SidebarGroupContent>
+          <SidebarGroupContent>
+            {convoLoading ? <ConversationSkeleton /> : <GroupChatList />}
+          </SidebarGroupContent>
         </SidebarGroup>
 
         {/* Dirrect Message */}
@@ -82,12 +87,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             {/* <AddFriendModal /> */}
           </SidebarGroupAction>
 
-          <SidebarGroupContent>{<DirectMessageList />}</SidebarGroupContent>
+          <SidebarGroupContent>
+            {convoLoading ? <ConversationSkeleton /> : <DirectMessageList />}
+          </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
 
       {/* Footer */}
-      {/* <SidebarFooter>{user && <NavUser user={user} />}</SidebarFooter> */}
+      <SidebarFooter>{user && <NavUser user={user} />}</SidebarFooter>
     </Sidebar>
   );
 }

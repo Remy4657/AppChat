@@ -15,22 +15,10 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { useAuthStore } from "@/stores/useAuthStore";
+
 import ChatWindowLayout from "@/components/chat/ChatWIndowLayout";
 
 export default function Home() {
-  const router = useRouter();
-  const { signOut, fetchMe, user } = useAuthStore();
-
-  const handleLogout = async () => {
-    try {
-      await signOut();
-      router.push("/signin");
-    } catch (error) {}
-  };
-
   return (
     <SidebarProvider>
       <AppSidebar />

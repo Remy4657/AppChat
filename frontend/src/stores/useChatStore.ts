@@ -9,11 +9,10 @@ export const useChatStore = create<ChatState>()(
     (set, get) => ({
       conversations: [],
       messages: {},
-      activeConversationId: null,
+      activeConversationId: null, // thuộc tính này để lưu id của cuộc trò chuyện đang được mở, khi activeConversationId thay đổi thì component chat sẽ tự động fetch messages cho cuộc trò chuyện đó
       convoLoading: false, // convo loading
       messageLoading: false,
       loading: false,
-
       setActiveConversation: (id) => set({ activeConversationId: id }),
       reset: () => {
         set({
@@ -43,7 +42,7 @@ export const useChatStore = create<ChatState>()(
 
         if (!convoId) return;
 
-        const current = messages?.[convoId];
+        const current = messages?.[convoId]; // lấy messages đã lưu trong store cho conversation này nếu có để lấy nextCursor, nếu chưa có thì sẽ fetch từ đầu
         const nextCursor =
           current?.nextCursor === undefined ? "" : current?.nextCursor;
 
@@ -56,17 +55,18 @@ export const useChatStore = create<ChatState>()(
             convoId,
             nextCursor
           );
-
+          // xử lý dữ liệu để thêm thuộc tính isOwn vào mỗi message, isOwn sẽ được dùng để phân biệt message nào là của người dùng hiện tại gửi ra để hiển thị ở giao diện
           const processed = fetched.map((m) => ({
             ...m,
             isOwn: m.senderId === user?._id,
           }));
 
           set((state) => {
+            // nếu đã có messages cho conversation này trong store thì sẽ merge messages mới fetch được với messages đã có, nếu chưa có thì sẽ dùng messages mới fetch được
             const prev = state.messages[convoId]?.items ?? [];
             const merged =
               prev.length > 0 ? [...processed, ...prev] : processed;
-
+            // hasMore sẽ được set thành true nếu còn cursor để fetch tiếp, nếu không còn cursor nào nữa thì set thành false để giao diện biết là đã load hết messages và không cần hiển thị nút load more nữa
             return {
               messages: {
                 ...state.messages,
