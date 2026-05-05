@@ -26,12 +26,12 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
     const status = error.response?.status;
-    const message = error.response?.data?.message || "Có lỗi xảy ra";
+    // const message = error.response?.data?.message || "Có lỗi xảy ra";
 
     switch (status) {
-      case 400:
-        toast.error(message);
-        break;
+      // case 400:
+      //   toast.error(message);
+      //   break;
       case 403:
         originalRequest._retryCount = originalRequest._retryCount || 0;
 

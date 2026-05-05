@@ -29,6 +29,7 @@ const DirectMessageCard = ({ convo }: { convo: Conversation }) => {
 
   const handleSelectConversation = async (id: string) => {
     setActiveConversation(id);
+    // Nếu chưa có tin nhắn nào được tải về cho cuộc trò chuyện này thì call api
     if (!messages[id]) {
       await fetchMessages();
     }

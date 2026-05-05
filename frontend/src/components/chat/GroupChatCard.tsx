@@ -20,8 +20,8 @@ const GroupChatCard = ({ convo }: { convo: Conversation }) => {
   const name = convo.group?.name ?? "";
   const handleSelectConversation = async (id: string) => {
     setActiveConversation(id);
+    // nếu chưa có tin nhắn nào được load cho cuộc trò chuyện này thì call api
     if (!messages[id]) {
-      // nếu chưa có tin nhắn nào được load cho cuộc trò chuyện này
       await fetchMessages();
     }
   };

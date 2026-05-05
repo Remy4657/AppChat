@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import { ImagePlus, Send } from "lucide-react";
 import { Input } from "../ui/input";
-// import EmojiPicker from "./EmojiPicker";
+import EmojiPicker from "./EmojiPiker";
 import { useChatStore } from "@/stores/useChatStore";
 import { toast } from "sonner";
 
@@ -17,8 +17,8 @@ const MessageInput = ({ selectedConvo }: { selectedConvo: Conversation }) => {
 
   const sendMessage = async () => {
     if (!value.trim()) return;
-    const currValue = value;
-    setValue("");
+    const currValue = value; // lưu lại giá trị hiện tại của input trước khi reset để tránh trường hợp người dùng gửi tin nhắn quá nhanh khiến value bị reset trước khi gửi
+    setValue(""); // reset input ngay khi người dùng gửi tin nhắn để tạo cảm giác phản hồi nhanh, nếu để sau khi gửi xong mới reset thì sẽ có cảm giác lag vì phải đợi đến khi gửi xong mới thấy input trống để soạn tin nhắn tiếp theo
 
     try {
       if (selectedConvo.type === "direct") {
@@ -60,24 +60,18 @@ const MessageInput = ({ selectedConvo }: { selectedConvo: Conversation }) => {
           className="pr-20 h-9 bg-white border-border/50 focus:border-primary/50 transition-smooth resize-none"
         ></Input>
         <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-8 hover:bg-primary/10 transition-smooth"
-          >
-            {/* <div>
-              <EmojiPicker
-                onChange={(emoji: string) => setValue(`${value}${emoji}`)}
-              />
-            </div> */}
-          </Button>
+          <div>
+            <EmojiPicker
+              onChange={(emoji: string) => setValue(`${value}${emoji}`)}
+            />
+          </div>
         </div>
       </div>
 
       <Button
         onClick={sendMessage}
         className="bg-gradient-chat hover:shadow-glow transition-smooth hover:scale-105"
-        disabled={!value.trim()}
+        disabled={!value.trim()} // vô hiệu hóa nút gửi nếu input chỉ chứa khoảng trắng hoặc rỗng
       >
         <Send className="size-4 text-white" />
       </Button>

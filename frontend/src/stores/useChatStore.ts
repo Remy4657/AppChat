@@ -7,7 +7,7 @@ import { useAuthStore } from "./useAuthStore";
 export const useChatStore = create<ChatState>()(
   persist(
     (set, get) => ({
-      conversations: [],
+      conversations: [], // lưu danh sách cuộc trò chuyện của người dùng, mỗi conversation sẽ có thông tin về id, type (direct hay group), name (chỉ có group mới có), participants (thành viên trong cuộc trò chuyện), lastMessage (tin nhắn cuối cùng trong cuộc trò chuyện, được dùng để hiển thị preview tin nhắn ở giao diện sidebar), seenBy (mảng lưu id những người đã xem tin nhắn cuối cùng, được dùng để hiển thị trạng thái đã xem ở giao diện sidebar), unreadCounts (đối tượng lưu số lượng tin nhắn chưa đọc của mỗi thành viên trong cuộc trò chuyện, được dùng để hiển thị badge số lượng tin nhắn chưa đọc ở giao diện sidebar)
       messages: {},
       activeConversationId: null, // thuộc tính này để lưu id của cuộc trò chuyện đang được mở, khi activeConversationId thay đổi thì component chat sẽ tự động fetch messages cho cuộc trò chuyện đó
       convoLoading: false, // convo loading
@@ -26,6 +26,7 @@ export const useChatStore = create<ChatState>()(
       fetchConversations: async () => {
         try {
           set({ convoLoading: true });
+          // fetchConversations sẽ trả về danh sách cuộc trò chuyện của người dùng, người dùng được xác định bằng access token gửi kèm trong header của request, nên không cần truyền userId vào hàm này
           const { conversations } = await chatService.fetchConversations();
 
           set({ conversations, convoLoading: false });
@@ -93,6 +94,7 @@ export const useChatStore = create<ChatState>()(
             imgUrl,
             activeConversationId || undefined
           );
+          // khi gửi tin nhắn mới thì sẽ reset seenBy của cuộc trò chuyện đó về rỗng để hiển thị trạng thái chưa xem cho những người tham gia khác, khi người dùng khác mở cuộc trò chuyện đó lên thì sẽ gọi API markAsSeen để cập nhật seenBy và hiển thị trạng thái đã xem ở giao diện
           set((state) => ({
             conversations: state.conversations.map((c) =>
               c._id === activeConversationId ? { ...c, seenBy: [] } : c
@@ -105,6 +107,7 @@ export const useChatStore = create<ChatState>()(
       sendGroupMessage: async (conversationId, content, imgUrl) => {
         try {
           await chatService.sendGroupMessage(conversationId, content, imgUrl);
+          // khi gửi tin nhắn mới thì sẽ reset seenBy của cuộc trò chuyện đó về rỗng để hiển thị trạng thái chưa xem cho những người tham gia khác, khi người dùng khác mở cuộc trò chuyện đó lên thì sẽ gọi API markAsSeen để cập nhật seenBy và hiển thị trạng thái đã xem ở giao diện
           set((state) => ({
             conversations: state.conversations.map((c) =>
               c._id === get().activeConversationId ? { ...c, seenBy: [] } : c

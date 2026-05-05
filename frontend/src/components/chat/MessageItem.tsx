@@ -20,15 +20,15 @@ const MessageItem = ({
   lastMessageStatus,
 }: MessageItemProps) => {
   const prev = index + 1 < messages.length ? messages[index + 1] : undefined;
-
+  // isShowTime nếu là tin nhắn đầu tiên hoặc cách tin nhắn trước đó hơn 5 phút
   const isShowTime =
     index === 0 ||
     new Date(message.createdAt).getTime() -
       new Date(prev?.createdAt || 0).getTime() >
       300000; // 5 phút
-
+  // isGroupBreak nếu là tin nhắn đầu tiên hoặc cách tin nhắn trước đó hơn 5 phút hoặc người gửi khác nhau, khi isGroupBreak là true thì sẽ hiển thị avatar và tên người gửi ở giao diện, ngược lại sẽ ẩn để tạo cảm giác liền mạch cho các tin nhắn được gửi liên tiếp bởi cùng một người trong khoảng thời gian ngắn
   const isGroupBreak = isShowTime || message.senderId !== prev?.senderId;
-
+  //  participant sẽ tìm trong danh sách participants của conversation hiện tại để lấy thông tin của người gửi tin nhắn, thông tin này sẽ được dùng để hiển thị avatar và tên người gửi ở giao diện nếu isGroupBreak là true
   const participant = selectedConvo.participants.find(
     (p: Participant) => p._id.toString() === message.senderId.toString()
   );
@@ -49,6 +49,7 @@ const MessageItem = ({
         )}
       >
         {/* avatar */}
+        {/* nếu tin nhắn không phải do người dùng hiện tại gửi ra thì mới hiển thị avatar, nếu isGroupBreak là true thì sẽ hiển thị avatar và tên người gửi, ngược lại sẽ ẩn để tạo cảm giác liền mạch cho các tin nhắn được gửi liên tiếp bởi cùng một người trong khoảng thời gian ngắn */}
         {!message.isOwn && (
           <div className="w-8">
             {isGroupBreak && (
@@ -81,7 +82,11 @@ const MessageItem = ({
             </p>
           </Card>
 
-          {/* seen/ delivered */}
+          {/* seen  delivered  */}
+          {/* chỉ hiển thị trạng thái seen/delivered cho tin nhắn cuối cùng của 
+          cuộc trò chuyện và chỉ hiển thị với tin nhắn do người dùng hiện tại gửi ra, 
+          nếu tin nhắn đó đã được xem bởi người nhận thì sẽ hiển thị "seen" với màu 
+          primary, ngược lại sẽ hiển thị "delivered" với màu muted */}
           {message.isOwn && message._id === selectedConvo.lastMessage?._id && (
             <Badge
               variant="outline"
