@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import UserAvatar from "./UserAvatar";
 import StatusBadge from "./StatusBadge";
 import UnreadCountBadge from "./UnreadCountBadge";
-// import { useSocketStore } from "@/stores/useSocketStore";
+import { useSocketStore } from "@/stores/useSocketStore";
 
 const DirectMessageCard = ({ convo }: { convo: Conversation }) => {
   const { user } = useAuthStore();
@@ -16,7 +16,7 @@ const DirectMessageCard = ({ convo }: { convo: Conversation }) => {
     messages,
     fetchMessages,
   } = useChatStore();
-  //   const { onlineUsers } = useSocketStore();
+  const onlineUsers = useSocketStore((state) => state.onlineUsers);
 
   if (!user) return null;
 
@@ -25,7 +25,6 @@ const DirectMessageCard = ({ convo }: { convo: Conversation }) => {
 
   const unreadCount = convo.unreadCounts[user._id];
   const lastMessage = convo.lastMessage?.content ?? "";
-  const onlineUsers = "true";
 
   const handleSelectConversation = async (id: string) => {
     setActiveConversation(id);
@@ -38,7 +37,7 @@ const DirectMessageCard = ({ convo }: { convo: Conversation }) => {
   return (
     <ChatCard
       convoId={convo._id}
-      name={otherUser.displayName ?? ""}
+      name={otherUser.username ?? ""}
       timestamp={
         convo.lastMessage?.createdAt
           ? new Date(convo.lastMessage.createdAt)
@@ -51,7 +50,7 @@ const DirectMessageCard = ({ convo }: { convo: Conversation }) => {
         <>
           <UserAvatar
             type="sidebar"
-            name={otherUser.displayName ?? ""}
+            name={otherUser.username ?? ""}
             avatarUrl={otherUser.avatarUrl ?? undefined}
           />
           <StatusBadge

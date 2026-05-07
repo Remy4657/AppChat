@@ -13,11 +13,10 @@ import messageRoute from "./routes/messageRoutes.js"
 import conversationRoute from "./routes/conversationRoute.js"
 
 import { protectedRoute } from "./middlewares/authMiddleware.js"
-
+import { app, server } from "./socket/index.js"
 
 dotenv.config()
 
-const app = express()
 const PORT = process.env.PORT || 5001
 
 //middlewares
@@ -27,11 +26,6 @@ app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 
 // swagger
 const swaggerDocument = JSON.parse(fs.readFileSync("./src/swagger.json", "utf8"));
-// swaggerUi.setup(swaggerDocument, {
-//     swaggerOptions: {
-//         withCredentials: true
-//     }
-// });
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 //public route
@@ -45,7 +39,7 @@ app.use("/api/messages", messageRoute);
 app.use("/api/conversations", conversationRoute);
 
 connectDB().then(() => {
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
         console.log(`server started at port ${PORT}`)
     })
 })

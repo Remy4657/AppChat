@@ -8,7 +8,9 @@ const ACCESS_TOKEN_TTL = "30m"; // thuờng là dưới 15m
 const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000; // 14 ngày
 
 export const registerUser = async (data) => {
-    const { username, email, firstName, lastName } = data;
+    console.log("data user service:", data);
+
+    const { username, email, firstname, lastname } = data;
 
     // check duplicate
     const existingUser = await User.findOne({
@@ -20,7 +22,7 @@ export const registerUser = async (data) => {
     }
 
     // create user (password sẽ được hash trong schema)
-    const user = await User.create({ ...data, displayName: `${lastName} ${firstName}` });
+    const user = await User.create({ ...data, displayName: `${lastname} ${firstname}` });
 
     // không trả password về client
     user.password = undefined;

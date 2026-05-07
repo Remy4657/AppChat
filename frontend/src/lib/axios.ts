@@ -4,10 +4,7 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { authService } from "@/services/authService";
 
 const api = axios.create({
-  baseURL:
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:5001/api"
-      : "/api",
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true,
 });
 // Response interceptor
@@ -17,7 +14,7 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // những api không cần check
+    // những api không cần check token như signin, signup, refresh thì không cần gọi refresh token nữa vì nếu gọi refresh token mà refresh token cũng hết hạn thì sẽ bị lỗi vòng lặp vô hạn nên cần check trước khi gọi refresh token
     if (
       originalRequest.url.includes("/auth/signin") ||
       originalRequest.url.includes("/auth/signup") ||
@@ -43,7 +40,7 @@ api.interceptors.response.use(
             useAuthStore.getState().setAccessToken(newAccessToken);
             return api(originalRequest); // retry lại request cũ với access token mới
           } catch (error) {
-            useAuthStore.getState().clearState();
+            useAuthStore.getState().signOut();
             return Promise.reject(error);
           }
         }

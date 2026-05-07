@@ -6,7 +6,8 @@ const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000; // 14 ngày
 
 export const register = async (req, res) => {
     try {
-        const { username, password, email, firstName, lastName } = req.body;
+        const { username, password, email, firstname, lastname } = req.body;
+        console.log("data user controller:", req.body);
 
         // validate basic
         if (!username || !password || !email) {
@@ -19,8 +20,8 @@ export const register = async (req, res) => {
             username,
             password,
             email,
-            firstName,
-            lastName,
+            firstname,
+            lastname,
         });
 
         return res.status(201).json({

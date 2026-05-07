@@ -6,9 +6,10 @@ import { useAuthStore } from "./useAuthStore";
 
 export const useChatStore = create<ChatState>()(
   persist(
+    // persist middleware của zustand sẽ tự động lưu state vào localStorage và load lại state từ localStorage khi khởi tạo store, trong trường hợp này thì chỉ lưu conversations vào localStorage để khi reload trang thì vẫn giữ được danh sách cuộc trò chuyện
     (set, get) => ({
-      conversations: [], // lưu danh sách cuộc trò chuyện của người dùng, mỗi conversation sẽ có thông tin về id, type (direct hay group), name (chỉ có group mới có), participants (thành viên trong cuộc trò chuyện), lastMessage (tin nhắn cuối cùng trong cuộc trò chuyện, được dùng để hiển thị preview tin nhắn ở giao diện sidebar), seenBy (mảng lưu id những người đã xem tin nhắn cuối cùng, được dùng để hiển thị trạng thái đã xem ở giao diện sidebar), unreadCounts (đối tượng lưu số lượng tin nhắn chưa đọc của mỗi thành viên trong cuộc trò chuyện, được dùng để hiển thị badge số lượng tin nhắn chưa đọc ở giao diện sidebar)
-      messages: {},
+      conversations: [], // lưu danh sách cuộc trò chuyện của người dùng
+      messages: {}, // lưu messages của các cuộc trò chuyện, messages sẽ được lưu theo dạng object với key là conversationId và value là object chứa items (danh sách message đã fetch được), hasMore (boolean để biết còn message nào để fetch tiếp hay không), nextCursor (cursor để fetch tiếp nếu hasMore là true)
       activeConversationId: null, // thuộc tính này để lưu id của cuộc trò chuyện đang được mở, khi activeConversationId thay đổi thì component chat sẽ tự động fetch messages cho cuộc trò chuyện đó
       convoLoading: false, // convo loading
       messageLoading: false,
@@ -28,6 +29,7 @@ export const useChatStore = create<ChatState>()(
           set({ convoLoading: true });
           // fetchConversations sẽ trả về danh sách cuộc trò chuyện của người dùng, người dùng được xác định bằng access token gửi kèm trong header của request, nên không cần truyền userId vào hàm này
           const { conversations } = await chatService.fetchConversations();
+          console.log("conversations: ", conversations);
 
           set({ conversations, convoLoading: false });
         } catch (error) {

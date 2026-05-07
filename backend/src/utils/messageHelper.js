@@ -21,9 +21,9 @@ export const updateConversationAfterCreateMessage = (
         conversation.unreadCounts.set(memberId, isSender ? 0 : prevCount + 1); // nếu người tham gia là người gửi thì reset về 0, ngược lại tăng lên 1 để phản ánh tin nhắn mới chưa được xem bởi người đó
     });
 };
-
+// emitNewMessage de 
 export const emitNewMessage = (io, conversation, message) => {
-    io.to(conversation._id.toString()).emit("new-message", {
+    io.to(conversation._id.toString()).emit("new-message", { // gửi tin nhắn mới đến tất cả client đang tham gia cuộc trò chuyện này
         message,
         conversation: {
             _id: conversation._id,

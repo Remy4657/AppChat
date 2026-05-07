@@ -11,7 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { useEffect } from "react";
+import { toast } from "sonner";
 
 const signInSchema = z.object({
   username: z.string().min(3, "Tên đăng nhập phải có ít nhất 3 ký tự"),
@@ -36,13 +36,15 @@ export function SigninForm() {
     try {
       const { username, password } = data;
       await signIn(username, password);
+      toast.success("Đăng nhập thành công!");
       router.push("/");
-    } catch (error) {}
+      // eslint-disable-next-line
+    } catch (error: any) {
+      toast.error(
+        error.response?.data.message || "Đăng nhập thất bại. Vui lòng thử lại."
+      );
+    }
   };
-  console.log("loading:");
-  useEffect(() => {
-    console.log("signIn changed:");
-  }, [signIn, register, handleSubmit, errors, isSubmitting]);
 
   return (
     <div className={cn("flex flex-col gap-6")}>
@@ -58,7 +60,7 @@ export function SigninForm() {
 
                 <h1 className="text-2xl font-bold">Chào mừng quay lại</h1>
                 <p className="text-muted-foreground text-balance">
-                  Đăng nhập vào tài khoản Moji của bạn
+                  Đăng nhập vào tài khoản QuickChat của bạn
                 </p>
               </div>
 

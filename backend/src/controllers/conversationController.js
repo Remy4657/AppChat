@@ -62,12 +62,12 @@ export const createConversation = async (req, res) => {
         }
         // populate để lấy thông tin chi tiết của participants, seenBy và lastMessage.senderId trong conversation trước khi trả về cho client.
         await conversation.populate([
-            { path: "participants.userId", select: "displayName avatarUrl" },
+            { path: "participants.userId", select: "username displayName avatarUrl" },
             {
                 path: "seenBy",
-                select: "displayName avatarUrl",
+                select: "username displayName avatarUrl",
             },
-            { path: "lastMessage.senderId", select: "displayName avatarUrl" },
+            { path: "lastMessage.senderId", select: "username displayName avatarUrl" },
         ]);
 
         // const participants = (conversation.participants || []).map((p) => ({
@@ -106,21 +106,22 @@ export const getConversations = async (req, res) => {
             .sort({ lastMessageAt: -1, updatedAt: -1 })
             .populate({
                 path: "participants.userId",
-                select: "displayName avatarUrl",
+                select: "username displayName avatarUrl",
             })
             .populate({
                 path: "lastMessage.senderId",
-                select: "displayName avatarUrl",
+                select: "username displayName avatarUrl",
             })
             .populate({
                 path: "seenBy",
-                select: "displayName avatarUrl",
+                select: "username displayName avatarUrl",
             });
 
         const formatted = conversations.map((convo) => {
             const participants = (convo.participants || []).map((p) => ({
                 _id: p.userId?._id,
                 displayName: p.userId?.displayName,
+                username: p.userId?.username,
                 avatarUrl: p.userId?.avatarUrl ?? null,
                 joinedAt: p.joinedAt,
             }));

@@ -57,7 +57,7 @@ export function SignupForm({
                   <Image src="/logo.svg" alt="logo" width={50} height={50} />
                 </Link>
 
-                <h1 className="text-2xl font-bold">Tạo tài khoản Moji</h1>
+                <h1 className="text-2xl font-bold">Tạo tài khoản QuickChat</h1>
                 <p className="text-muted-foreground text-balance">
                   Chào mừng bạn! Hãy đăng ký để bắt đầu!
                 </p>

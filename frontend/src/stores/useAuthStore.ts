@@ -4,12 +4,12 @@ import { toast } from "sonner";
 import type { AuthState } from "@/types/store";
 import { authService } from "@/services/authService";
 import { useChatStore } from "./useChatStore";
+
 export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
   devtools((set, get) => ({
     accessToken: null,
     user: null,
     loading: false,
-
     clearState: () => set({ accessToken: null, user: null, loading: false }),
     setAccessToken: (token) => set({ accessToken: token }),
 
@@ -38,7 +38,6 @@ export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
         get().setAccessToken(accessToken);
         await get().fetchMe();
         useChatStore.getState().fetchConversations();
-        toast.success("Đăng nhập thành công!");
       } catch (error) {
         throw error; // để component biết đăng nhập thất bại, không throw new vì đã có interceptor của axios handle rồi
       } finally {
@@ -79,7 +78,7 @@ export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
         // luôn fetch me sau khi refresh token để cập nhật thông tin user mới nhất vì khi refresh trang thì data lưu trong zudtand sẽ bị mất
         await fetchMe();
       } catch (error) {
-        get().clearState();
+        get().signOut(); // xóa state và gọi api sign out để invalidate token ở backend nếu refresh token thất bại, tuy nhiên nếu refresh token thất bại thì token cũng sẽ bị backend invalidate nên cũng không ảnh hưởng gì
         toast.error("Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại: ");
         throw error; // để component biết refresh token thất bại
       } finally {

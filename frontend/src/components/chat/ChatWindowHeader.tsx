@@ -6,12 +6,12 @@ import { Separator } from "../ui/separator";
 import UserAvatar from "./UserAvatar";
 import StatusBadge from "./StatusBadge";
 import GroupChatAvatar from "./GroupChatAvatar";
-// import { useSocketStore } from "@/stores/useSocketStore";
+import { useSocketStore } from "@/stores/useSocketStore";
 
 const ChatWindowHeader = ({ chat }: { chat?: Conversation }) => {
   const { conversations, activeConversationId } = useChatStore();
   const { user } = useAuthStore();
-  const onlineUsers = "";
+  const onlineUsers = useSocketStore((state) => state.onlineUsers);
 
   let otherUser;
 
@@ -48,7 +48,7 @@ const ChatWindowHeader = ({ chat }: { chat?: Conversation }) => {
               <>
                 <UserAvatar
                   type={"sidebar"}
-                  name={otherUser?.displayName || "Moji"}
+                  name={otherUser?.username || "QuickChat"}
                   avatarUrl={otherUser?.avatarUrl || undefined}
                 />
                 {/* todo: socket io */}
@@ -70,7 +70,7 @@ const ChatWindowHeader = ({ chat }: { chat?: Conversation }) => {
 
           {/* name */}
           <h2 className="font-semibold text-foreground">
-            {chat.type === "direct" ? otherUser?.displayName : chat.group?.name}
+            {chat.type === "direct" ? otherUser?.username : chat.group?.name}
           </h2>
         </div>
       </div>
