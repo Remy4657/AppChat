@@ -4,7 +4,7 @@ import {
     emitNewMessage,
     updateConversationAfterCreateMessage,
 } from "../utils/messageHelper.js";
-// import { io } from "../socket/index.js";
+import { io } from "../socket/index.js";
 
 export const sendDirectMessage = async (req, res) => {
     try {
@@ -42,8 +42,8 @@ export const sendDirectMessage = async (req, res) => {
         // để đảm bảo tính nhất quán, sau khi tạo tin nhắn mới, sẽ cập nhật lại thông tin của conversation như lastMessage, lastMessageAt và seenBy, đồng thời tăng số lượng tin nhắn chưa đọc cho tất cả người tham gia trừ người gửi. Sau đó lưu lại conversation để cập nhật vào cơ sở dữ liệu
         updateConversationAfterCreateMessage(conversation, message, senderId);
         await conversation.save();
-
-        //emitNewMessage(io, conversation, message);
+        // sau khi đã cập nhật xong conversation, sẽ phát sự kiện "newMessage" qua socket.io để thông báo cho tất cả người tham gia trong conversation về tin nhắn mới vừa được tạo
+        emitNewMessage(io, conversation, message);
 
         return res.status(201).json({ message });
     } catch (error) {
@@ -71,7 +71,7 @@ export const sendGroupMessage = async (req, res) => {
         updateConversationAfterCreateMessage(conversation, message, senderId);
 
         await conversation.save();
-        //emitNewMessage(io, conversation, message);
+        emitNewMessage(io, conversation, message);
 
         return res.status(201).json({ message });
     } catch (error) {

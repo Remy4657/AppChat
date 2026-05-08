@@ -2,7 +2,7 @@ import { Server } from "socket.io";
 import http from "http";
 import express from "express";
 import { socketAuthMiddleware } from "../middlewares/socketMiddleware.js";
-//import { getUserConversationsForSocketIO } from "../controllers/conversationController.js";
+import { getUserConversationsForSocketIO } from "../controllers/conversationController.js";
 
 const app = express();
 
@@ -27,16 +27,13 @@ io.on("connection", async (socket) => {
 
     io.emit("online-users", Array.from(onlineUsers.keys())); // Gửi danh sách userId của những người đang online cho tất cả client
 
-    // const conversationIds = await getUserConversationsForSocketIO(user._id);
-    // conversationIds.forEach((id) => {
-    //     socket.join(id);
-    // });
+    // Khi người dùng kết nối, lấy danh sách conversation mà họ tham gia và  socket join vào các phòng tương ứng với conversationId để có thể nhận được tin nhắn mới khi có tin nhắn được gửi đến các conversation đó.
+    const conversationIds = await getUserConversationsForSocketIO(user._id);
+    conversationIds.forEach((id) => {
+        socket.join(id);
+    });
 
-    // socket.on("join-conversation", (conversationId) => {
-    //     socket.join(conversationId);
-    // });
-
-    // socket.join(user._id.toString());
+    socket.join(user._id.toString());
 
     socket.on("disconnect", () => {
         onlineUsers.delete(user._id);

@@ -174,15 +174,15 @@ export const getMessages = async (req, res) => {
         return res.status(500).json({ message: "Lỗi hệ thống" });
     }
 };
-
+// lấy danh sách tất cả các cuộc hộ thoại mà người dùng tham gia, trả về mảng các conversationId để sử dụng trong Socket.IO khi người dùng kết nối để tự động join vào các phòng tương ứng với các conversationId đó, giúp người dùng nhận được thông báo về tin nhắn mới hoặc cập nhật liên quan đến các cuộc hộ thoại mà họ tham gia.
 export const getUserConversationsForSocketIO = async (userId) => {
     try {
         const conversations = await Conversation.find(
             { "participants.userId": userId },
-            { _id: 1 },
+            { _id: 1 }, // chỉ lấy trường _id của conversation 
         );
 
-        return conversations.map((c) => c._id.toString());
+        return conversations.map((c) => c._id.toString()); // chuyển ObjectId thành string để dễ sử dụng trong Socket.IO
     } catch (error) {
         console.error("Lỗi khi fetch conversations: ", error);
         return [];

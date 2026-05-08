@@ -31,7 +31,33 @@ export const useSocketStore = create<SocketState>((set, get) => ({
       console.log("Danh sách userId đang online:", userIds);
       set({ onlineUsers: userIds });
     });
+    // new message
+    socket.on("new-message", ({ message, conversation, unreadCounts }) => {
+      useChatStore.getState().addMessage(message);
+      // Khi nhận được tin nhắn mới, cần cập nhật lại lastMessage và unreadCounts
+      // của cuộc trò chuyện đó trong store để giao diện có thể hiển thị thông tin
+      // mới nhất, vì khi có tin nhắn mới thì lastMessage sẽ thay đổi thành tin nhắn
+      // mới nhất và unreadCounts sẽ tăng lên 1 cho người nhận
+      const lastMessage = {
+        _id: conversation.lastMessage._id,
+        content: conversation.lastMessage.content,
+        createdAt: conversation.lastMessage.createdAt,
+        sender: {
+          _id: conversation.lastMessage.senderId,
+          displayName: "",
+          avatarUrl: null,
+        },
+      };
+
+      const updatedConversation = {
+        ...conversation,
+        lastMessage,
+        unreadCounts,
+      };
+      useChatStore.getState().updateConversation(updatedConversation);
+    });
   },
+
   disconnectSocket: () => {
     const socket = get().socket;
     if (socket) {

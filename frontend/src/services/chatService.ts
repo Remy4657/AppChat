@@ -15,6 +15,7 @@ export const chatService = {
   },
 
   async fetchMessages(id: string, cursor?: string): Promise<FetchMessageProps> {
+    // cursor là optional vì lần đầu tiên fetch sẽ không có cursor, server sẽ trả về những tin nhắn mới nhất và kèm theo nextCursor để lần sau fetch tiếp
     const res = await api.get(
       `/conversations/${id}/messages?limit=${pageLimit}&cursor=${cursor}`
     );

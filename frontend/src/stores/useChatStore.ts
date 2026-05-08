@@ -29,7 +29,6 @@ export const useChatStore = create<ChatState>()(
           set({ convoLoading: true });
           // fetchConversations sẽ trả về danh sách cuộc trò chuyện của người dùng, người dùng được xác định bằng access token gửi kèm trong header của request, nên không cần truyền userId vào hàm này
           const { conversations } = await chatService.fetchConversations();
-          console.log("conversations: ", conversations);
 
           set({ conversations, convoLoading: false });
         } catch (error) {
@@ -37,6 +36,12 @@ export const useChatStore = create<ChatState>()(
           set({ convoLoading: false });
         }
       },
+      // fetchMessages được gọi khi activeConversationId thay đổi hoặc khi người dùng
+      // click vào nút load more để fetch thêm messages cho cuộc trò chuyện đó, sau khi fetch
+      //xong thì sẽ merge messages mới fetch được với messages đã có trong store
+      //cho cuộc trò chuyện đó (nếu đã có), đồng thời cập nhật hasMore và
+      //nextCursor dựa vào dữ liệu trả về từ API để biết còn message nào để
+      //fetch tiếp hay không
       fetchMessages: async (conversationId) => {
         const { activeConversationId, messages } = get();
         const { user } = useAuthStore.getState();
@@ -45,9 +50,9 @@ export const useChatStore = create<ChatState>()(
 
         if (!convoId) return;
 
-        const current = messages?.[convoId]; // lấy messages đã lưu trong store cho conversation này nếu có để lấy nextCursor, nếu chưa có thì sẽ fetch từ đầu
+        const current = messages?.[convoId]; // lấy messages đã lưu trong store cho conversation này nếu có (nghĩa là trước đó nếu user bấm vào conv để xem tin nhắn prevItems sẽ có), nếu chưa có thì sẽ là mảng rỗng
         const nextCursor =
-          current?.nextCursor === undefined ? "" : current?.nextCursor;
+          current?.nextCursor === undefined ? "" : current?.nextCursor; // nếu nextCursor trong store là undefined nghĩa là chưa từng fetch messages cho conversation này bao giờ thì sẽ set nextCursor thành empty string để fetch từ đầu, nếu đã từng fetch rồi thì sẽ lấy nextCursor từ store để fetch tiếp, nếu nextCursor trong store là null nghĩa là đã fetch hết messages cho conversation này rồi thì sẽ không fetch nữa nên return luôn
 
         if (nextCursor === null) return;
 
@@ -68,7 +73,7 @@ export const useChatStore = create<ChatState>()(
             // nếu đã có messages cho conversation này trong store thì sẽ merge messages mới fetch được với messages đã có, nếu chưa có thì sẽ dùng messages mới fetch được
             const prev = state.messages[convoId]?.items ?? [];
             const merged =
-              prev.length > 0 ? [...processed, ...prev] : processed;
+              prev.length > 0 ? [...processed, ...prev] : processed; // nếu đã có messages cũ thì sẽ merge messages mới vào trước messages cũ (sau nay sẽ đảo ngược tin nhắn mới nhất ở sau cùng để đảm bảo đúng thứ tự), nếu chưa có thì sẽ dùng messages mới luôn
             // hasMore sẽ được set thành true nếu còn cursor để fetch tiếp, nếu không còn cursor nào nữa thì set thành false để giao diện biết là đã load hết messages và không cần hiển thị nút load more nữa
             return {
               messages: {
@@ -119,6 +124,7 @@ export const useChatStore = create<ChatState>()(
           console.error("Lỗi xảy ra gửi group message", error);
         }
       },
+      // hàm addMessage này sẽ được gọi khi nhận được sự kiện "new-message" từ socket, message được truyền vào hàm này là message mới được gửi ra từ server, hàm này sẽ thêm message mới vào store để giao diện tự động cập nhật mà không cần phải fetch lại toàn bộ messages của cuộc trò chuyện đó, nếu message đã tồn tại trong store rồi thì sẽ không thêm nữa để tránh trùng lặp
       addMessage: async (message) => {
         try {
           const { user } = useAuthStore.getState();
@@ -127,15 +133,16 @@ export const useChatStore = create<ChatState>()(
           message.isOwn = message.senderId === user?._id;
 
           const convoId = message.conversationId;
-
+          // lấy messages đã lưu trong store cho conversation này nếu có (nghĩa là trước đó nếu user bấm vào conv để xem tin nhắn prevItems sẽ có), nếu chưa có thì sẽ là mảng rỗng
           let prevItems = get().messages[convoId]?.items ?? [];
-
+          // đảm bảo rằng nếu prevItems đang là mảng rỗng thì sẽ fetch messages cho conversation này để lấy về những messages đã có trong database, tránh trường hợp khi nhận được message mới mà prevItems đang là mảng rỗng thì sẽ thêm message mới vào store nhưng những messages cũ đã có trong database lại không có trong store nên sẽ bị mất những messages cũ đó đi, sau khi fetch xong thì sẽ lấy lại prevItems từ store để tiếp tục xử lý
           if (prevItems.length === 0) {
             await fetchMessages(message.conversationId);
             prevItems = get().messages[convoId]?.items ?? [];
           }
 
           set((state) => {
+            // kiểm tra nếu tin nhắn sắp được thêm vào đã có trong db chưa, nếu có rồi thì sẽ không thêm nữa để tránh trùng lặp
             if (prevItems.some((m) => m._id === message._id)) {
               return state;
             }

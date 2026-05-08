@@ -34,7 +34,7 @@ export interface ChatState {
     {
       items: Message[];
       hasMore: boolean; // infinite-scroll
-      nextCursor?: string | null; // phân trang
+      nextCursor?: string | null; // phân trang, lưu giá trị là createdAt của tin nhắn cuối cùng đã load, khi fetch thêm tin nhắn thì sẽ gửi nextCursor này lên server để server biết nên trả về những tin nhắn nào có createdAt nhỏ hơn nextCursor, nếu nextCursor là null hoặc không có thì sẽ trả về những tin nhắn mới nhất, data trả về có dạng: { items: Message[], hasMore: boolean, nextCursor?: string | null
     }
   >;
   //data trả ra có dạng:
