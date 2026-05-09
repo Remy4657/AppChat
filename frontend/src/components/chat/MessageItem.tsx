@@ -20,8 +20,6 @@ const MessageItem = ({
   lastMessageStatus,
 }: MessageItemProps) => {
   // prev sẽ lấy tin nhắn trước đó trong danh sách messages dựa trên index hiện tại, nếu index + 1 nhỏ hơn độ dài của messages thì sẽ lấy tin nhắn ở vị trí index + 1, ngược lại sẽ là undefined, điều này là do messages được render theo thứ tự ngược (mới nhất ở dưới cùng) nên tin nhắn trước đó sẽ có index lớn hơn tin nhắn hiện tại trong mảng messages
-  const indexcpy = index;
-  const mess = messages[indexcpy];
   const prev = index + 1 < messages.length ? messages[index + 1] : undefined;
   // isShowTime = true nếu là tin nhắn cách tin nhắn trước đó hơn 3 phút, khi isShowTime là true thì sẽ hiển thị thời gian gửi tin nhắn ở giao diện để người dùng dễ dàng theo dõi thời gian của các tin nhắn trong cuộc trò chuyện, ngược lại sẽ ẩn để tạo cảm giác liền mạch cho các tin nhắn được gửi liên tiếp trong khoảng thời gian ngắn
   const isShowTime =

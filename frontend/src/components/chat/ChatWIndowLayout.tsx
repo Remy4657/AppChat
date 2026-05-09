@@ -17,22 +17,22 @@ const ChatWindowLayout = () => {
 
   const selectedConvo =
     conversations.find((c) => c._id === activeConversationId) ?? null;
+  // Khi selectedConvo thay đổi (khi người dùng chuyển sang cuộc trò chuyện khác), sẽ gọi markAsSeen để đánh dấu tin nhắn trong cuộc trò chuyện đó đã được xem, nếu không có selectedConvo nào được chọn thì sẽ không làm gì cả
+  useEffect(() => {
+    if (!selectedConvo) {
+      return;
+    }
 
-  // useEffect(() => {
-  //   if (!selectedConvo) {
-  //     return;
-  //   }
+    const markSeen = async () => {
+      try {
+        await markAsSeen();
+      } catch (error) {
+        console.error("Lỗi khi markSeen", error);
+      }
+    };
 
-  //   const markSeen = async () => {
-  //     try {
-  //       await markAsSeen();
-  //     } catch (error) {
-  //       console.error("Lỗi khi markSeen", error);
-  //     }
-  //   };
-
-  //   markSeen();
-  // }, [markAsSeen, selectedConvo]);
+    markSeen();
+  }, [markAsSeen, selectedConvo]);
 
   if (!selectedConvo) {
     return <ChatWelcomeScreen />;

@@ -33,13 +33,14 @@ const ChatWindowBody = () => {
   const containerRef = useRef<HTMLDivElement>(null); // ref để lưu vị trí scroll của danh sách tin nhắn, containerRef sẽ được gắn vào div chứa danh sách tin nhắn, khi người dùng scroll thì sẽ lấy vị trí scroll hiện tại từ containerRef.current.scrollTop để lưu vào sessionStorage, khi load lại cuộc trò chuyện thì sẽ lấy vị trí scroll đã lưu từ sessionStorage để scroll đến đúng vị trí đó
 
   // seen status
+  // useEffect để cập nhật trạng thái seen/delivered của tin nhắn cuối cùng trong cuộc trò chuyện mỗi khi selectedConvo thay đổi
   useEffect(() => {
     const lastMessage = selectedConvo?.lastMessage;
     if (!lastMessage) {
       return;
     }
 
-    const seenBy = selectedConvo?.seenBy ?? [];
+    const seenBy = selectedConvo?.seenBy ?? []; // seenBy là mảng chứa thông tin về những người đã xem tin nhắn cuối cùng của cuộc trò chuyện, nếu seenBy.length > 0 thì có nghĩa là đã có người xem tin nhắn đó rồi nên sẽ cập nhật trạng thái thành "seen", ngược lại nếu seenBy.length === 0 thì có nghĩa là chưa ai xem tin nhắn đó nên sẽ giữ nguyên trạng thái "delivered"
     // eslint-disable-next-line
     setLastMessageStatus(seenBy.length > 0 ? "seen" : "delivered");
   }, [selectedConvo]);
@@ -80,19 +81,19 @@ const ChatWindowBody = () => {
     );
   };
   // useLayoutEffect để lấy vị trí scroll đã lưu từ sessionStorage mỗi khi messages.length thay đổi, tức là mỗi khi có tin nhắn mới được load hoặc gửi đi, useLayoutEffect sẽ được gọi sau khi DOM đã được cập nhật nhưng trước khi trình duyệt vẽ lại giao diện, nên sẽ đảm bảo rằng việc scroll diễn ra trước khi người dùng nhìn thấy giao diện mới, tránh hiện tượng nhảy scroll hoặc scroll không đúng vị trí
-  useLayoutEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
+  // useLayoutEffect(() => {
+  //   const container = containerRef.current;
+  //   if (!container) return;
 
-    const item = sessionStorage.getItem(key);
+  //   const item = sessionStorage.getItem(key);
 
-    if (item) {
-      const { scrollTop } = JSON.parse(item);
-      requestAnimationFrame(() => {
-        container.scrollTop = scrollTop;
-      });
-    }
-  }, [messages.length]);
+  //   if (item) {
+  //     const { scrollTop } = JSON.parse(item);
+  //     requestAnimationFrame(() => {
+  //       container.scrollTop = scrollTop;
+  //     });
+  //   }
+  // }, [messages.length]);
 
   if (!selectedConvo) {
     return <ChatWelcomeScreen />;

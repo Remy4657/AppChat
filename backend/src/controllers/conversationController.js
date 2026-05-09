@@ -1,3 +1,4 @@
+import { io } from "../socket/index.js";
 import Conversation from "../models/Conversation.js";
 import Message from "../models/Message.js";
 
@@ -205,7 +206,7 @@ export const markAsSeen = async (req, res) => {
         if (!last) {
             return res.status(200).json({ message: "Không có tin nhắn để mark as seen" });
         }
-
+        // cái event socket "new-mesage" được phát ra mỗi khi có một tin nhắn mới được tạo trong một cuộc trò chuyện thì tất cả người tham gia nên nhận được kể cả bản thân người gửi nên cần kiểm tra nếu người gửi là chính họ (chính là người xem) thì không cần phải mark as seen 
         if (last.senderId.toString() === userId) {
             return res.status(200).json({ message: "Sender không cần mark as seen" });
         }
@@ -220,7 +221,7 @@ export const markAsSeen = async (req, res) => {
                 new: true,
             },
         );
-
+        // sau khi đã cập nhật thông tin seenBy và unreadCounts trong conversation, sẽ phát sự kiện "read-message" qua Socket.IO đến tất cả người tham gia trong conversation để thông báo rằng tin nhắn đã được xem. Sự kiện này sẽ bao gồm thông tin về conversation đã được cập nhật và thông tin về lastMessage để các client có thể cập nhật giao diện người dùng tương ứng.
         io.to(conversationId).emit("read-message", {
             conversation: updated,
             lastMessage: {
@@ -235,7 +236,7 @@ export const markAsSeen = async (req, res) => {
 
         return res.status(200).json({
             message: "Marked as seen",
-            seenBy: updated?.sennBy || [],
+            seenBy: updated?.seenBy || [],
             myUnreadCount: updated?.unreadCounts[userId] || 0,
         });
     } catch (error) {

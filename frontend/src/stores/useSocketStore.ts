@@ -54,7 +54,26 @@ export const useSocketStore = create<SocketState>((set, get) => ({
         lastMessage,
         unreadCounts,
       };
+      // nếu có cuộc trò chuyện nào đang được mở và cuộc trò chuyện đó chính là cuộc trò chuyện nhận được tin nhắn mới thì sẽ gọi markAsSeen để đánh dấu tin nhắn đó đã được xem
+      if (
+        useChatStore.getState().activeConversationId === message.conversationId
+      ) {
+        useChatStore.getState().markAsSeen();
+      }
+      // cập nhật cuộc trò chuyện trong store với thông tin mới nhất về lastMessage và unreadCounts
       useChatStore.getState().updateConversation(updatedConversation);
+    });
+    // read message
+    socket.on("read-message", ({ conversation, lastMessage }) => {
+      const updated = {
+        _id: conversation._id,
+        lastMessage,
+        lastMessageAt: conversation.lastMessageAt,
+        unreadCounts: conversation.unreadCounts,
+        seenBy: conversation.seenBy,
+      };
+      // Khi nhận được sự kiện read-message, có nghĩa là một tin nhắn đã được đánh dấu là đã xem, do đó cần cập nhật lại thông tin của cuộc trò chuyện đó trong store để giao diện có thể hiển thị trạng thái seen mới nhất, cụ thể là cập nhật lại lastMessage, lastMessageAt, unreadCounts và seenBy của cuộc trò chuyện đó
+      useChatStore.getState().updateConversation(updated);
     });
   },
 

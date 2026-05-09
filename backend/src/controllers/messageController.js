@@ -71,7 +71,7 @@ export const sendGroupMessage = async (req, res) => {
         updateConversationAfterCreateMessage(conversation, message, senderId);
 
         await conversation.save();
-        emitNewMessage(io, conversation, message);
+        emitNewMessage(io, conversation, message); // sau khi đã cập nhật xong conversation, sẽ phát sự kiện "newMessage" qua socket.io để thông báo cho tất cả người tham gia trong conversation về tin nhắn mới vừa được tạo
 
         return res.status(201).json({ message });
     } catch (error) {

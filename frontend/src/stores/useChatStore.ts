@@ -189,9 +189,9 @@ export const useChatStore = create<ChatState>()(
           if ((convo.unreadCounts?.[user._id] ?? 0) === 0) {
             return;
           }
-
+          // gọi API để đánh dấu tin nhắn đã được xem, API này sẽ cập nhật seenBy và unreadCounts ở backend, sau khi cập nhật xong thì sẽ trả về conversation đã được cập nhật để frontend có thể cập nhật lại thông tin mới nhất của cuộc trò chuyện đó vào store, nếu không trả về conversation đã được cập nhật thì có thể tự cập nhật trong frontend bằng cách set lại seenBy và unreadCounts dựa vào userId của người dùng hiện tại
           await chatService.markAsSeen(activeConversationId);
-
+          // cập nhật lại unreadCounts trong store
           set((state) => ({
             conversations: state.conversations.map((c) =>
               c._id === activeConversationId && c.lastMessage
