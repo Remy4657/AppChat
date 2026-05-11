@@ -63,17 +63,17 @@ export const createConversation = async (req, res) => {
         }
         // populate để lấy thông tin chi tiết của participants, seenBy và lastMessage.senderId trong conversation trước khi trả về cho client.
         await conversation.populate([
-            { path: "participants.userId", select: "username displayName avatarUrl" },
+            { path: "participants.userId", select: "username displayname avatarUrl" },
             {
                 path: "seenBy",
-                select: "username displayName avatarUrl",
+                select: "username displayname avatarUrl",
             },
-            { path: "lastMessage.senderId", select: "username displayName avatarUrl" },
+            { path: "lastMessage.senderId", select: "username displayname avatarUrl" },
         ]);
 
         // const participants = (conversation.participants || []).map((p) => ({
         //     _id: p.userId?._id,
-        //     displayName: p.userId?.displayName,
+        //     displayname: p.userId?.displayname,
         //     avatarUrl: p.userId?.avatarUrl ?? null,
         //     joinedAt: p.joinedAt,
         // }));
@@ -107,21 +107,21 @@ export const getConversations = async (req, res) => {
             .sort({ lastMessageAt: -1, updatedAt: -1 })
             .populate({
                 path: "participants.userId",
-                select: "username displayName avatarUrl",
+                select: "username displayname avatarUrl",
             })
             .populate({
                 path: "lastMessage.senderId",
-                select: "username displayName avatarUrl",
+                select: "username displayname avatarUrl",
             })
             .populate({
                 path: "seenBy",
-                select: "username displayName avatarUrl",
+                select: "username displayname avatarUrl",
             });
 
         const formatted = conversations.map((convo) => {
             const participants = (convo.participants || []).map((p) => ({
                 _id: p.userId?._id,
-                displayName: p.userId?.displayName,
+                displayname: p.userId?.displayname,
                 username: p.userId?.username,
                 avatarUrl: p.userId?.avatarUrl ?? null,
                 joinedAt: p.joinedAt,

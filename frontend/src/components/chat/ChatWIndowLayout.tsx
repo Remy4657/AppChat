@@ -25,6 +25,7 @@ const ChatWindowLayout = () => {
 
     const markSeen = async () => {
       try {
+        // update trong database và store
         await markAsSeen();
       } catch (error) {
         console.error("Lỗi khi markSeen", error);

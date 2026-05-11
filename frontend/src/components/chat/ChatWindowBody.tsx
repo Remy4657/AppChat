@@ -17,7 +17,7 @@ const ChatWindowBody = () => {
   >("delivered");
   // Lấy mảng messages cho cuộc trò chuyện hiện tại, nếu không có thì trả về mảng rỗng
   const messages = allMessages[activeConversationId!]?.items ?? [];
-  // đảo ngược thứ tự messages để hiển thị tin nhắn mới nhất ở dưới cùng
+  // đảo ngược thứ tự messages do đảo ngược thứ tự hiển thị trong InfiniteScroll, do hành vi mặc định của react là kéo xuống để load thêm tin nhắn cũ hơn nên cần đảo ngược thứ tự của mảng messages để hiển thị tin nhắn mới nhất ở dưới cùng và tin nhắn cũ hơn ở trên cùng
   const reversedMessages = [...messages].reverse();
   // kiểm tra xem còn tin nhắn nào để load thêm không dựa vào hasMore trong store, nếu hasMore là true thì sẽ hiển thị nút load more để người dùng có thể click vào đó để load thêm tin nhắn, nếu hasMore là false thì sẽ không hiển thị nút load more nữa vì đã load hết tin nhắn rồi
   const hasMore = allMessages[activeConversationId!]?.hasMore ?? false;
@@ -81,19 +81,19 @@ const ChatWindowBody = () => {
     );
   };
   // useLayoutEffect để lấy vị trí scroll đã lưu từ sessionStorage mỗi khi messages.length thay đổi, tức là mỗi khi có tin nhắn mới được load hoặc gửi đi, useLayoutEffect sẽ được gọi sau khi DOM đã được cập nhật nhưng trước khi trình duyệt vẽ lại giao diện, nên sẽ đảm bảo rằng việc scroll diễn ra trước khi người dùng nhìn thấy giao diện mới, tránh hiện tượng nhảy scroll hoặc scroll không đúng vị trí
-  // useLayoutEffect(() => {
-  //   const container = containerRef.current;
-  //   if (!container) return;
+  useLayoutEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
 
-  //   const item = sessionStorage.getItem(key);
+    const item = sessionStorage.getItem(key);
 
-  //   if (item) {
-  //     const { scrollTop } = JSON.parse(item);
-  //     requestAnimationFrame(() => {
-  //       container.scrollTop = scrollTop;
-  //     });
-  //   }
-  // }, [messages.length]);
+    if (item) {
+      const { scrollTop } = JSON.parse(item);
+      requestAnimationFrame(() => {
+        container.scrollTop = scrollTop;
+      });
+    }
+  }, [messages.length]);
 
   if (!selectedConvo) {
     return <ChatWelcomeScreen />;

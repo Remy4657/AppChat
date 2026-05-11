@@ -15,7 +15,55 @@
       "post": {
         "summary": "SignUp",
         "tags": ["Authentication"],
-        "responses": {},
+        "responses": {
+          "201": {
+            "description": "User successfully signed up",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Register successful"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "username": {
+                          "type": "string",
+                          "example": "string"
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "user@example.com"
+                        },
+                        "displayname": {
+                          "type": "string",
+                          "example": "Nguyen Van A"
+                        },
+                        "_id": {
+                          "type": "string",
+                          "example": "6a018542e61b0fd0549ca7f5"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2026-05-11T07:29:06.774Z"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2026-05-11T07:29:06.774Z"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
         "requestBody": {
           "content": {
             "application/json": {
@@ -33,10 +81,10 @@
                     "type": "string",
                     "format": "email"
                   },
-                  "firstName": {
+                  "firstname": {
                     "type": "string"
                   },
-                  "lastName": {
+                  "lastname": {
                     "type": "string"
                   }
                 }
@@ -103,7 +151,23 @@
         "summary": "SignOut",
         "tags": ["Authentication"],
         "responses": {
-          "200": { "description": "Success" },
+          "200": {
+            "description": "User successfully signed out",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Logout successful"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Lỗi khi đăng xuất" },
           "500": { "description": "Internal server error" }
         }
       }
@@ -112,7 +176,26 @@
       "post": {
         "summary": "RefreshToken",
         "tags": ["Authentication"],
-        "responses": {}
+        "responses": {
+          "200": {
+            "description": "Refresh token successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "newAccessToken": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyS..."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Lỗi khi refresh token" },
+          "500": { "description": "Internal server error" }
+        }
       }
     },
     "/users/me": {
@@ -128,12 +211,11 @@
                   "_id": "69e6e4eac481bb0826a98947",
                   "username": "remy4",
                   "email": "remy4@gmail.com",
-                  "displayName": "4 remyy",
-                  "firstName": "remyy",
-                  "lastName": "4",
+                  "displayname": "4 remyy",
+                  "firstname": "remyy",
+                  "lastname": "4",
                   "createdAt": "2026-04-21T02:46:02.189Z",
-                  "updatedAt": "2026-04-21T02:46:02.189Z",
-                  "__v": 0
+                  "updatedAt": "2026-04-21T02:46:02.189Z"
                 }
               }
             }

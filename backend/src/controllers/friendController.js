@@ -87,14 +87,14 @@ export const acceptFriendRequest = async (req, res) => {
         await FriendRequest.findByIdAndDelete(requestId);
 
         const from = await User.findById(request.from)
-            .select("_id displayName avatarUrl")
+            .select("_id displayname avatarUrl")
             .lean();
 
         return res.status(200).json({
             message: "Chấp nhận lời mời kết bạn thành công",
             newFriend: {
                 _id: from?._id,
-                displayName: from?.displayName,
+                displayname: from?.displayname,
                 avatarUrl: from?.avatarUrl,
             },
         });
@@ -134,7 +134,7 @@ export const getAllFriends = async (req, res) => {
     try {
         const userId = req.user._id;
         // tìm tất cả các mối quan hệ bạn bè mà người dùng hiện tại tham gia, bất kể họ là userA hay userB trong mô hình Friend. 
-        // Sau đó, sử dụng phương thức populate để lấy thông tin chi tiết của cả hai người dùng trong mỗi mối quan hệ bạn bè, nhưng chỉ lấy những trường cần thiết như _id, displayName, avatarUrl và username.
+        // Sau đó, sử dụng phương thức populate để lấy thông tin chi tiết của cả hai người dùng trong mỗi mối quan hệ bạn bè, nhưng chỉ lấy những trường cần thiết như _id, displayname, avatarUrl và username.
         const friendships = await Friend.find({
             $or: [
                 {
@@ -145,8 +145,8 @@ export const getAllFriends = async (req, res) => {
                 },
             ],
         })
-            .populate("userA", "_id displayName avatarUrl username") // pôplate để lấy thông tin chi tiết của người dùng trong mỗi mối quan hệ bạn bè, nhưng chỉ lấy những trường cần thiết như _id, displayName, avatarUrl và username. 
-            .populate("userB", "_id displayName avatarUrl username")
+            .populate("userA", "_id displayname avatarUrl username") // pôplate để lấy thông tin chi tiết của người dùng trong mỗi mối quan hệ bạn bè, nhưng chỉ lấy những trường cần thiết như _id, displayname, avatarUrl và username. 
+            .populate("userB", "_id displayname avatarUrl username")
             .lean(); // trả về plain JavaScript objects thay vì Mongoose documents
 
         if (!friendships.length) {
@@ -168,10 +168,10 @@ export const getFriendRequests = async (req, res) => {
     try {
         const userId = req.user._id;
 
-        const populateFields = "_id username displayName avatarUrl";
+        const populateFields = "_id username displayname avatarUrl";
 
         const [sent, received] = await Promise.all([
-            FriendRequest.find({ from: userId }).populate("to", populateFields), // populate để lấy thông tin chi tiết của người nhận lời mời kết bạn, nhưng chỉ lấy những trường cần thiết như _id, displayName, avatarUrl và username.
+            FriendRequest.find({ from: userId }).populate("to", populateFields), // populate để lấy thông tin chi tiết của người nhận lời mời kết bạn, nhưng chỉ lấy những trường cần thiết như _id, displayname, avatarUrl và username.
             FriendRequest.find({ to: userId }).populate("from", populateFields),
         ]);
 

@@ -33,6 +33,7 @@ export const useSocketStore = create<SocketState>((set, get) => ({
     });
     // new message
     socket.on("new-message", ({ message, conversation, unreadCounts }) => {
+      // cập nhật tin nhắn mới vào store để giao diện có thể hiển thị tin nhắn mới nhất
       useChatStore.getState().addMessage(message);
       // Khi nhận được tin nhắn mới, cần cập nhật lại lastMessage và unreadCounts
       // của cuộc trò chuyện đó trong store để giao diện có thể hiển thị thông tin
@@ -44,7 +45,7 @@ export const useSocketStore = create<SocketState>((set, get) => ({
         createdAt: conversation.lastMessage.createdAt,
         sender: {
           _id: conversation.lastMessage.senderId,
-          displayName: "",
+          displayname: "",
           avatarUrl: null,
         },
       };
@@ -58,6 +59,7 @@ export const useSocketStore = create<SocketState>((set, get) => ({
       if (
         useChatStore.getState().activeConversationId === message.conversationId
       ) {
+        // update trường seenBy và unreadCounts trong database và store, đồng thời kích hoạt sự kiện read-message để thông báo tôi đã xem
         useChatStore.getState().markAsSeen();
       }
       // cập nhật cuộc trò chuyện trong store với thông tin mới nhất về lastMessage và unreadCounts
@@ -67,8 +69,8 @@ export const useSocketStore = create<SocketState>((set, get) => ({
     socket.on("read-message", ({ conversation, lastMessage }) => {
       const updated = {
         _id: conversation._id,
-        lastMessage,
-        lastMessageAt: conversation.lastMessageAt,
+        // lastMessage,
+        // lastMessageAt: conversation.lastMessageAt,
         unreadCounts: conversation.unreadCounts,
         seenBy: conversation.seenBy,
       };

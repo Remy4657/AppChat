@@ -17,6 +17,7 @@ export default function RefreshTokenProvider({
 
   const [starting, setStarting] = useState(true);
   const refreshToken = useAuthStore((state) => state.refreshToken);
+  const fetchMe = useAuthStore((state) => state.fetchMe);
   const hasInit = useRef(false); // dùng useRef để lưu trạng thái đã gọi refresh token hay chưa, nếu đã gọi rồi thì không gọi lại nữa để tránh bị lỗi vòng lặp vô hạn khi refresh token thất bại và bị chuyển hướng về trang đăng nhập liên tục
 
   useEffect(() => {
@@ -30,7 +31,7 @@ export default function RefreshTokenProvider({
 
     const init = async () => {
       try {
-        await refreshToken();
+        await fetchMe();
       } catch (error) {
         router.push("/signin"); // chuyển hướng về trang đăng nhập nếu refresh token thất bại
       } finally {

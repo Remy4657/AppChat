@@ -28,6 +28,7 @@ import ConversationSkeleton from "../skeleton/ConversationSkeleton";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useThemeStore } from "@/stores/useThemeStore";
 import { useChatStore } from "@/stores/useChatStore";
+import AddFriendModal from "../chat/AddFriendModal";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { isDark, toggleTheme } = useThemeStore();
@@ -83,8 +84,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {/* Dirrect Message */}
         <SidebarGroup>
           <SidebarGroupLabel className="uppercase">bạn bè</SidebarGroupLabel>
-          <SidebarGroupAction title="Kết Bạn" className="cursor-pointer">
-            {/* <AddFriendModal /> */}
+          <SidebarGroupAction title="Kết Bạn">
+            <AddFriendModal />
           </SidebarGroupAction>
 
           <SidebarGroupContent>

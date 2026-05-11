@@ -33,7 +33,7 @@ export function NavUser({
 }: {
   user: {
     email: string;
-    displayName: string;
+    displayname: string;
     avatarUrl?: string | null;
   };
 }) {
@@ -57,11 +57,11 @@ export function NavUser({
             }
           >
             <Avatar>
-              <AvatarImage src={user.avatarUrl ?? ""} alt={user.displayName} />
+              <AvatarImage src={user.avatarUrl ?? ""} alt={user.displayname} />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-medium">{user.displayName}</span>
+              <span className="truncate font-medium">{user.displayname}</span>
               <span className="truncate text-xs">{user.email}</span>
             </div>
             <ChevronsUpDownIcon className="ml-auto size-4" />
@@ -78,13 +78,13 @@ export function NavUser({
                   <Avatar>
                     <AvatarImage
                       src={user.avatarUrl ?? ""}
-                      alt={user.displayName}
+                      alt={user.displayname}
                     />
                     <AvatarFallback>CN</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-medium">
-                      {user.displayName}
+                      {user.displayname}
                     </span>
                     <span className="truncate text-xs">{user.email}</span>
                   </div>

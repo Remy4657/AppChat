@@ -7,8 +7,6 @@ const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000; // 14 ngày
 export const register = async (req, res) => {
     try {
         const { username, password, email, firstname, lastname } = req.body;
-        console.log("data user controller:", req.body);
-
         // validate basic
         if (!username || !password || !email) {
             return res.status(400).json({
@@ -106,7 +104,7 @@ export const refreshToken = async (req, res) => {
         });
 
         return res.status(200).json(
-            newAccessToken
+            { newAccessToken: newAccessToken }
         );
     } catch (error) {
         res.clearCookie("refreshToken", {

@@ -11,8 +11,8 @@ export interface AuthState {
   setAccessToken: (token: string) => void;
 
   signUp: (
-    firstName: string,
-    lastName: string,
+    firstname: string,
+    lastname: string,
     username: string,
     email: string,
     password: string
@@ -95,10 +95,6 @@ export interface FriendState {
   sentList: FriendRequest[];
   searchByUsername: (username: string) => Promise<User | null>;
   addFriend: (to: string, message?: string) => Promise<string>;
-  getAllFriendRequests: () => Promise<void>;
-  acceptRequest: (requestId: string) => Promise<void>;
-  declineRequest: (requestId: string) => Promise<void>;
-  getFriends: () => Promise<void>;
 }
 export interface SocketState {
   socket: Socket | null;
