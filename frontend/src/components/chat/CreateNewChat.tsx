@@ -1,14 +1,14 @@
-// import { useFriendStore } from "@/stores/useFriendStore";
+import { useFriendStore } from "@/stores/useFriendStore";
 import { Card } from "../ui/card";
 import { Dialog, DialogTrigger } from "../ui/dialog";
 import { MessageCircle } from "lucide-react";
-// import FriendListModal from "../createNewChat/FriendListModal";
+import FriendListModal from "../createNewChat/FriendListModal";
 
 const CreateNewChat = () => {
-  // const { getFriends } = useFriendStore();
+  const { getFriends } = useFriendStore();
 
   const handleGetFriends = async () => {
-    //await getFriends();
+    await getFriends();
   };
 
   return (
@@ -29,7 +29,7 @@ const CreateNewChat = () => {
             </div>
           </DialogTrigger>
 
-          {/* <FriendListModal /> */}
+          <FriendListModal />
         </Dialog>
       </Card>
     </div>

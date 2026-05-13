@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const signUpSchema = z.object({
   firstname: z.string().min(1, "Tên bắt buộc phải có"),
@@ -42,7 +43,13 @@ export function SignupForm({
       const { firstname, lastname, username, email, password } = data;
       await signUp(firstname, lastname, username, email, password);
       router.push("/signin");
-    } catch (error) {}
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Đăng ký thất bại. Vui lòng thử lại."
+      );
+    }
   };
 
   return (

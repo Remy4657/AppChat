@@ -1,4 +1,4 @@
-
+import User from "../models/User.js";
 
 
 export const fetchMe = async (req, res) => {
@@ -20,7 +20,7 @@ export const searchUserByUsername = async (req, res) => {
         }
 
         const user = await User.findOne({ username }).select(
-            "_id displayName username avatarUrl"
+            "_id displayname username avatarUrl"
         );
 
         return res.status(200).json({ user });

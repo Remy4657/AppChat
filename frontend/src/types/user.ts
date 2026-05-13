@@ -1,6 +1,6 @@
 export interface User {
   _id: string;
-  username?: string;
+  username: string;
   email: string;
   displayname: string;
   avatarUrl?: string | null;
@@ -11,8 +11,8 @@ export interface User {
 }
 export interface Friend {
   _id: string;
-  username: string;
   displayname: string;
+  username: string;
   avatarUrl?: string;
 }
 

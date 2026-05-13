@@ -56,26 +56,23 @@ const SearchForm = ({
       </div>
 
       <DialogFooter>
-        <DialogClose>
-          <Button
-            variant="outline"
-            className="flex-1 glass hover:text-destructive"
-            onClick={onCancel}
-          >
-            Cancel
-          </Button>
+        <DialogClose
+          className="flex-1 glass hover:text-destructive cursor-pointer"
+          onClick={onCancel}
+        >
+          Cancel
         </DialogClose>
 
         <Button
           type="submit"
           disabled={loading || !usernameValue?.trim()}
-          className="flex-1 bg-gradient-chat text-white hover:opacity-90 transition-smooth"
+          className="flex-1 bg-gradient-chat text-white hover:opacity-90 transition-smooth cursor-pointer"
         >
           {loading ? (
             <span>Đang tìm ...</span>
           ) : (
             <>
-              <Search className="size-4 mr-2" /> Tìm
+              <Search className="size-4 mr-2 " /> Tìm
             </>
           )}
         </Button>

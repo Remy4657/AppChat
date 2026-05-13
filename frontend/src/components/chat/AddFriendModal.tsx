@@ -66,8 +66,8 @@ const AddFriendModal = () => {
       toast.success(message);
 
       handleCancel();
-    } catch (error) {
-      console.error("Lỗi xảy ra khi gửi request từ form", error);
+    } catch (error: any) {
+      toast.error(error?.message);
     }
   });
 

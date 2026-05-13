@@ -6,7 +6,7 @@ export const sendFriendRequest = async (req, res) => {
     try {
         const { to, message } = req.body;
 
-        const from = req.user._id;
+        const from = req.user._id.toString();
 
         if (from === to) {
             return res
