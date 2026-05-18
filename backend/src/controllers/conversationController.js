@@ -22,7 +22,7 @@ export const createConversation = async (req, res) => {
         let conversation;
 
         if (type === "direct") {
-            const participantId = memberIds[0]; // đối với cuộc trò chuyện trực tiếp, chỉ nên có một participantId duy nhất trong memberIds, đại diện cho người mà người dùng hiện tại muốn trò chuyện cùng
+            const participantId = memberIds[0]; // đối với cuộc trò chuyện trực tiếp, chỉ có một participantId duy nhất trong mảng memberIds, đại diện cho người mà người dùng hiện tại muốn trò chuyện cùng
             // kiểm tra xem đã tồn tại cuộc trò chuyện nào giữa hai người dùng hay chưa trước khi tạo mới. 
             //Nếu đã tồn tại, sẽ sử dụng lại cuộc trò chuyện đó thay vì tạo một cuộc trò chuyện mới.
             conversation = await Conversation.findOne({
@@ -71,27 +71,26 @@ export const createConversation = async (req, res) => {
             { path: "lastMessage.senderId", select: "username displayname avatarUrl" },
         ]);
 
-        // const participants = (conversation.participants || []).map((p) => ({
-        //     _id: p.userId?._id,
-        //     displayname: p.userId?.displayname,
-        //     avatarUrl: p.userId?.avatarUrl ?? null,
-        //     joinedAt: p.joinedAt,
-        // }));
+        const participants = (conversation.participants || []).map((p) => ({
+            _id: p.userId?._id,
+            displayname: p.userId?.displayname,
+            username: p.userId?.username,
+            avatarUrl: p.userId?.avatarUrl ?? null,
+            joinedAt: p.joinedAt,
+        }));
 
-        // const formatted = { ...conversation.toObject(), participants };
+        const formatted = { ...conversation.toObject(), participants };
+        if (type === "group") {
+            memberIds.forEach((userId) => {
+                io.to(userId).emit("new-group", formatted); // sau khi tạo xong cuộc trò chuyện nhóm mới, sẽ phát sự kiện "new-group" qua Socket.IO đến tất cả thành viên trong nhóm (bao gồm cả người tạo nhóm) để thông báo về cuộc trò chuyện nhóm mới vừa được tạo và gửi kèm thông tin chi tiết của conversation đã được format để các client có thể cập nhật giao diện người dùng tương ứng.
+            });
+        }
 
-        // if (type === "group") {
-        //     memberIds.forEach((userId) => {
-        //         io.to(userId).emit("new-group", formatted);
-        //     });
-        // }
-
-        // if (type === "direct") {
-        //     io.to(userId).emit("new-group", formatted);
-        //     io.to(memberIds[0]).emit("new-group", formatted);
-        // }
-
-        return res.status(201).json({ conversation });
+        if (type === "direct") {
+            io.to(userId).emit("new-group", formatted);
+            io.to(memberIds[0]).emit("new-group", formatted);
+        }
+        return res.status(201).json({ conversation: formatted });
     } catch (error) {
         console.error("Lỗi khi tạo conversation", error);
         return res.status(500).json({ message: "Lỗi hệ thống" });

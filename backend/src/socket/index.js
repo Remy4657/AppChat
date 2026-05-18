@@ -19,7 +19,7 @@ io.use(socketAuthMiddleware);
 
 const onlineUsers = new Map(); // {userId: socketId}
 
-io.on("connection", async (socket) => {
+io.on("connection", async (socket) => { // Khi có một client kết nối đến server qua Socket.IO, hàm callback này sẽ được gọi với đối số là socket đại diện cho kết nối của client đó.
     const user = socket.user;
     console.log(user.username, "connected with socket ID:", socket.id);
 
@@ -29,11 +29,15 @@ io.on("connection", async (socket) => {
 
     // Khi người dùng kết nối, lấy danh sách conversation mà họ tham gia và  socket join vào các phòng tương ứng với conversationId để có thể nhận được tin nhắn mới khi có tin nhắn được gửi đến các conversation đó.
     const conversationIds = await getUserConversationsForSocketIO(user._id);
-    conversationIds.forEach((id) => {
+    conversationIds.forEach((id) => { //Cs
+        console.log("socket joined conversation:", id)
         socket.join(id);
     });
-
-    socket.join(user._id.toString());
+    socket.on("join-conversation", (conversationId) => {
+        console.log("conversationId:", conversationId);
+        socket.join(conversationId);
+    });
+    socket.join(user._id.toString()); // mặc dù đã có bước {*) nhưng vẫn cần join vào phòng có tên là userId để có thể gửi tin nhắn trực tiếp đến người dùng đó khi cần thiết (ví dụ khi có tin nhắn mới trong một conversation mà người dùng đó tham gia, server có thể gửi thông báo đến phòng userId của người dùng đó để client biết và cập nhật giao diện)}
 
     socket.on("disconnect", () => {
         onlineUsers.delete(user._id);

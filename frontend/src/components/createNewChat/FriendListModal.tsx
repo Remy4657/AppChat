@@ -61,7 +61,7 @@ const FriendListModal = () => {
           {friends.length === 0 && (
             <div className="text-center py-8 text-muted-foreground">
               <Users className="size-12 mx-auto mb-3 opacity-50" />
-              Chưa có bạn bè. Thêm bạn vô để tám!
+              Danh sách bạn bè trống!
             </div>
           )}
         </div>

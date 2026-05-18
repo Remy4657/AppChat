@@ -3,6 +3,7 @@ import type { ChatState } from "@/types/store";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { useAuthStore } from "./useAuthStore";
+import { useSocketStore } from "./useSocketStore";
 
 export const useChatStore = create<ChatState>()(
   persist(
@@ -61,7 +62,7 @@ export const useChatStore = create<ChatState>()(
         try {
           const { messages: fetched, cursor } = await chatService.fetchMessages(
             convoId,
-            nextCursor
+            nextCursor,
           );
           // xử lý dữ liệu để thêm thuộc tính isOwn vào mỗi message, isOwn sẽ được dùng để phân biệt message nào là của người dùng hiện tại gửi ra để hiển thị ở giao diện
           const processed = fetched.map((m) => ({
@@ -99,12 +100,12 @@ export const useChatStore = create<ChatState>()(
             recipientId,
             content,
             imgUrl,
-            activeConversationId || undefined
+            activeConversationId || undefined,
           );
           // khi gửi tin nhắn mới thì sẽ reset seenBy của cuộc trò chuyện đó về rỗng để hiển thị trạng thái chưa xem cho những người tham gia khác, khi người dùng khác mở cuộc trò chuyện đó lên thì sẽ gọi API markAsSeen để cập nhật seenBy và hiển thị trạng thái đã xem ở giao diện
           set((state) => ({
             conversations: state.conversations.map((c) =>
-              c._id === activeConversationId ? { ...c, seenBy: [] } : c
+              c._id === activeConversationId ? { ...c, seenBy: [] } : c,
             ),
           }));
         } catch (error) {
@@ -117,7 +118,7 @@ export const useChatStore = create<ChatState>()(
           // khi gửi tin nhắn mới thì sẽ reset seenBy của cuộc trò chuyện đó về rỗng để hiển thị trạng thái chưa xem cho những người tham gia khác, khi người dùng khác mở cuộc trò chuyện đó lên thì sẽ gọi API markAsSeen để cập nhật seenBy và hiển thị trạng thái đã xem ở giao diện
           set((state) => ({
             conversations: state.conversations.map((c) =>
-              c._id === get().activeConversationId ? { ...c, seenBy: [] } : c
+              c._id === get().activeConversationId ? { ...c, seenBy: [] } : c,
             ),
           }));
         } catch (error) {
@@ -165,7 +166,7 @@ export const useChatStore = create<ChatState>()(
       updateConversation: (conversation) => {
         set((state) => ({
           conversations: state.conversations.map((c) =>
-            c._id === conversation._id ? { ...c, ...conversation } : c
+            c._id === conversation._id ? { ...c, ...conversation } : c,
           ),
         }));
       },
@@ -179,7 +180,7 @@ export const useChatStore = create<ChatState>()(
           }
 
           const convo = conversations.find(
-            (c) => c._id === activeConversationId
+            (c) => c._id === activeConversationId,
           );
 
           if (!convo) {
@@ -203,7 +204,7 @@ export const useChatStore = create<ChatState>()(
                       [user._id]: 0,
                     },
                   }
-                : c
+                : c,
             ),
           }));
         } catch (error) {
@@ -213,7 +214,7 @@ export const useChatStore = create<ChatState>()(
       addConvo: (convo) => {
         set((state) => {
           const exists = state.conversations.some(
-            (c) => c._id.toString() === convo._id.toString()
+            (c) => c._id.toString() === convo._id.toString(),
           );
 
           return {
@@ -226,20 +227,21 @@ export const useChatStore = create<ChatState>()(
       },
       createConversation: async (type, name, memberIds) => {
         try {
-          //   set({ loading: true });
-          //   const conversation = await chatService.createConversation(
-          //     type,
-          //     name,
-          //     memberIds
-          //   );
-          //   get().addConvo(conversation);
-          //   useSocketStore
-          //     .getState()
-          //     .socket?.emit("join-conversation", conversation._id);
+          set({ loading: true });
+          const conversation = await chatService.createConversation(
+            type,
+            name,
+            memberIds,
+          );
+          get().addConvo(conversation);
+          // sau khi tạo xong cuộc trò chuyện (group hoặc direct ở chức năng tạo nhóm hoặc "Gửi tin nhắn mới") thì tự động join vào phòng của cuộc trò chuyện đó luôn để nhận/gửi tin nhắn
+          useSocketStore
+            .getState()
+            .socket?.emit("join-conversation", conversation._id);
         } catch (error) {
           console.error(
             "Lỗi xảy ra khi gọi createConversation trong store",
-            error
+            error,
           );
         } finally {
           set({ loading: false });
@@ -249,6 +251,6 @@ export const useChatStore = create<ChatState>()(
     {
       name: "chat-storage",
       partialize: (state) => ({ conversations: state.conversations }),
-    }
-  )
+    },
+  ),
 );

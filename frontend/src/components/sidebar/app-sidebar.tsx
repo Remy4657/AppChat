@@ -29,6 +29,7 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { useThemeStore } from "@/stores/useThemeStore";
 import { useChatStore } from "@/stores/useChatStore";
 import AddFriendModal from "../chat/AddFriendModal";
+import NewGroupChatModal from "../chat/NewGroupChatModal";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { isDark, toggleTheme } = useThemeStore();
@@ -73,7 +74,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarGroupLabel className="uppercase">
               nhóm chat
             </SidebarGroupLabel>
-            {/* <NewGroupChatModal /> */}
+            <NewGroupChatModal />
           </div>
 
           <SidebarGroupContent>

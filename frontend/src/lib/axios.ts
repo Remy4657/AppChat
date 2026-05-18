@@ -47,6 +47,6 @@ api.interceptors.response.use(
         break;
     }
     return Promise.reject(error);
-  }
+  },
 );
 export default api;

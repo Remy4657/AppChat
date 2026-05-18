@@ -77,6 +77,11 @@ export const useSocketStore = create<SocketState>((set, get) => ({
       // Khi nhận được sự kiện read-message, có nghĩa là một tin nhắn đã được đánh dấu là đã xem, do đó cần cập nhật lại thông tin của cuộc trò chuyện đó trong store để giao diện có thể hiển thị trạng thái seen mới nhất, cụ thể là cập nhật lại lastMessage, lastMessageAt, unreadCounts và seenBy của cuộc trò chuyện đó
       useChatStore.getState().updateConversation(updated);
     });
+    // new group chat
+    socket.on("new-group", (conversation) => {
+      useChatStore.getState().addConvo(conversation); // cập nhật danh sách conversation trong store
+      socket.emit("join-conversation", conversation._id); // sự kiện "join-conversation" với conversationId của cuộc trò chuyện nhóm đó để tự động tham gia vào phòng chat của cuộc trò chuyện nhóm mới mà không cần phải chờ người dùng click vào cuộc trò chuyện đó trong giao diện, việc này giúp đảm bảo rằng người dùng sẽ nhận được tin nhắn từ cuộc trò chuyện nhóm mới ngay cả khi họ chưa kịp mở cuộc trò chuyện đó lên
+    });
   },
 
   disconnectSocket: () => {
