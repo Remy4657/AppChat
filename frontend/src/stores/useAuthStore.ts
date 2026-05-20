@@ -21,14 +21,14 @@ export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
           lastname,
           username,
           email,
-          password
+          password,
         );
         toast.success("Đăng ký thành công!");
       } catch (error: any) {
         // toast.error("Đăng ký thất bại. Vui lòng thử lại."); // đã thông báo ở axuios interceptor nên không cần thông báo ở đây nữa để tránh bị trùng lặp thông báo lỗi
         throw new Error(
           error?.response?.data?.message ||
-            "Lỗi xảy ra khi đăng ký. Hãy thử lại"
+            "Lỗi xảy ra khi đăng ký. Hãy thử lại",
         ); // để component biết đăng ký thất bại, không throw new vì đã có interceptor của axios handle rồi
       } finally {
         set({ loading: false });
@@ -57,15 +57,10 @@ export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
     },
     fetchMe: async () => {
       try {
-        const user = await authService.fetchMe();
-        set({ user });
-        // toast.success("API test thành công!");
+        const { user, accessToken } = await authService.fetchMe();
+        set({ user, accessToken }); // cập nhật cả user và accessToken để đảm bảo khi refresh trang thì vẫn có token trong state để kết nối socket, vì khi refresh trang thì data lưu trong zudtand sẽ bị mất nên cần cập nhật lại token sau khi fetch me để tránh bị lỗi socket disconnect do không có token, tuy nhiên nếu fetch me thất bại thì token cũng sẽ bị backend invalidate nên cũng không ảnh hưởng gì
       } catch (error) {
         set({ user: null, accessToken: null, loading: false });
-        toast.error(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          "API test thất bại: "
-        );
         throw error; // để component biết fetch me thất bại, không throw new vì đã có interceptor của axios handle rồi
       } finally {
         set({ loading: false });
@@ -73,11 +68,9 @@ export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
     },
     refreshToken: async () => {
       try {
-        const { fetchMe, setAccessToken } = get();
+        const { fetchMe } = get();
 
         set({ loading: true });
-        const newAccessToken = await authService.refreshToken();
-        setAccessToken(newAccessToken);
         // luôn fetch me sau khi refresh token để cập nhật thông tin user mới nhất vì khi refresh trang thì data lưu trong zudtand sẽ bị mất
         await fetchMe();
       } catch (error) {
@@ -88,5 +81,5 @@ export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
         set({ loading: false });
       }
     },
-  }))
+  })),
 );

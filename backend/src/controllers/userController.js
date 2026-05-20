@@ -4,7 +4,8 @@ import User from "../models/User.js";
 export const fetchMe = async (req, res) => {
     try {
         const user = req.user; // Thông tin người dùng đã được xác thực từ middleware
-        return res.status(200).json(user);
+        const accessToken = req.cookies?.accessToken
+        return res.status(200).json({ user, accessToken });
     } catch (error) {
         return res.status(500).json({
             message: "Lỗi hệ thống"

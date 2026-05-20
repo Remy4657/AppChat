@@ -1,3 +1,4 @@
+import { Message } from "@/types/chat";
 import { chatService } from "@/services/chatService";
 import type { ChatState } from "@/types/store";
 import { create } from "zustand";
@@ -228,16 +229,20 @@ export const useChatStore = create<ChatState>()(
       createConversation: async (type, name, memberIds) => {
         try {
           set({ loading: true });
-          const conversation = await chatService.createConversation(
-            type,
-            name,
-            memberIds,
-          );
-          get().addConvo(conversation);
-          // sau khi tạo xong cuộc trò chuyện (group hoặc direct ở chức năng tạo nhóm hoặc "Gửi tin nhắn mới") thì tự động join vào phòng của cuộc trò chuyện đó luôn để nhận/gửi tin nhắn
-          useSocketStore
-            .getState()
-            .socket?.emit("join-conversation", conversation._id);
+          const { conversation, isExistConversation } =
+            await chatService.createConversation(type, name, memberIds);
+          get().setActiveConversation(conversation._id);
+          if (!isExistConversation) {
+            // isExistConversation: nếu đã mở xem cuộc trò chuyện trước đó rồi (convo đã có trong store)
+            get().addConvo(conversation);
+            // sau khi tạo xong cuộc trò chuyện (group hoặc direct ở chức năng tạo nhóm hoặc "Gửi tin nhắn mới") thì tự động join vào phòng của cuộc trò chuyện đó luôn để nhận/gửi tin nhắn
+            useSocketStore
+              .getState()
+              .socket?.emit("join-conversation", conversation._id);
+          }
+          if (!get().messages[conversation._id]) {
+            await get().fetchMessages(conversation._id);
+          }
         } catch (error) {
           console.error(
             "Lỗi xảy ra khi gọi createConversation trong store",

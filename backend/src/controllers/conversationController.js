@@ -20,6 +20,7 @@ export const createConversation = async (req, res) => {
         }
 
         let conversation;
+        let isExistConversation = false;
 
         if (type === "direct") {
             const participantId = memberIds[0]; // đối với cuộc trò chuyện trực tiếp, chỉ có một participantId duy nhất trong mảng memberIds, đại diện cho người mà người dùng hiện tại muốn trò chuyện cùng
@@ -41,6 +42,10 @@ export const createConversation = async (req, res) => {
                 });
 
                 await conversation.save();
+            }
+            // nếu đã tồn tại cuộc trò chuyện trực tiếp giữa hai người dùng, sẽ trả về cuộc trò chuyện đó cho client thay vì tạo mới
+            else {
+                isExistConversation = true;
             }
         }
 
@@ -90,7 +95,7 @@ export const createConversation = async (req, res) => {
             io.to(userId).emit("new-group", formatted);
             io.to(memberIds[0]).emit("new-group", formatted);
         }
-        return res.status(201).json({ conversation: formatted });
+        return res.status(201).json({ conversation: formatted, isExistConversation });
     } catch (error) {
         console.error("Lỗi khi tạo conversation", error);
         return res.status(500).json({ message: "Lỗi hệ thống" });
