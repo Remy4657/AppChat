@@ -12,7 +12,9 @@ export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
     loading: false,
     clearState: () => set({ accessToken: null, user: null, loading: false }),
     setAccessToken: (token) => set({ accessToken: token }),
-
+    setUser: (user) => {
+      set({ user });
+    },
     signUp: async (firstname, lastname, username, email, password) => {
       set({ loading: true });
       try {

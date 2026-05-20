@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/useAuthStore";
+import ProfileDialog from "../profile/ProfileDialog";
 
 export function NavUser({
   user,
@@ -123,6 +124,7 @@ export function NavUser({
         open={friendRequestOpen}
         setOpen={setfriendRequestOpen}
       />
+      <ProfileDialog open={profileOpen} setOpen={setProfileOpen} />
     </>
   );
 }
