@@ -20,6 +20,15 @@ const messageSchema = new mongoose.Schema(
         imgUrl: {
             type: String,
         },
+        deleted_at: {
+            type: Date,
+            require: false
+        },
+        deleted_by: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: false,
+        }
     },
     {
         timestamps: true,

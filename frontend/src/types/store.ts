@@ -80,6 +80,12 @@ export interface ChatState {
     name: string,
     memberIds: string[],
   ) => Promise<void>;
+  retrieveMessage: (
+    messageId: string,
+    convoId: string,
+    deleted_at: string,
+    deleted_by: string,
+  ) => void;
 }
 
 export interface FriendState {

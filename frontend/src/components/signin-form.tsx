@@ -41,7 +41,7 @@ export function SigninForm() {
       // eslint-disable-next-line
     } catch (error: any) {
       toast.error(
-        error.response?.data.message || "Đăng nhập thất bại. Vui lòng thử lại."
+        error.response?.data.message || "Đăng nhập thất bại. Vui lòng thử lại.",
       );
     }
   };
@@ -55,12 +55,14 @@ export function SigninForm() {
               {/* header - logo */}
               <div className="flex flex-col items-center text-center gap-2">
                 <Link href="/" className="mx-auto block w-fit text-center">
-                  <Image src="/logo.svg" alt="logo" width={50} height={50} />
+                  <Image src="/logo.png" alt="logo" width={60} height={60} />
                 </Link>
 
-                <h1 className="text-2xl font-bold">Chào mừng quay lại</h1>
+                {/* <h1 className="text-2xl font-bold">
+                  Đăng nhập để bắt đầu trò chuyện
+                </h1> */}
                 <p className="text-muted-foreground text-balance">
-                  Đăng nhập vào tài khoản QuickChat của bạn
+                  Đăng nhập để bắt đầu trò chuyện
                 </p>
               </div>
 
@@ -72,7 +74,7 @@ export function SigninForm() {
                 <Input
                   type="text"
                   id="username"
-                  placeholder="moji"
+                  placeholder="username"
                   {...register("username")}
                 />
                 {errors.username && (
@@ -90,6 +92,7 @@ export function SigninForm() {
                 <Input
                   type="password"
                   id="password"
+                  placeholder="password"
                   {...register("password")}
                 />
                 {errors.password && (

@@ -35,7 +35,10 @@ const groupSchema = new mongoose.Schema(
 
 const lastMessageSchema = new mongoose.Schema(
     {
-        _id: { type: String },
+        _id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Message",
+        },
         content: {
             type: String,
             default: null,
@@ -44,10 +47,13 @@ const lastMessageSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
         },
-        createdAt: {
-            type: Date,
+        deleted_at: { type: Date, default: null },
+        deleted_by: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
             default: null,
         },
+        createdAt: { type: Date, default: null },
     },
     {
         _id: false, // không tạo _id cho subdocument này vì nó chỉ lưu thông tin tóm tắt của tin nhắn cuối cùng, không cần thiết phải có _id riêng biệt

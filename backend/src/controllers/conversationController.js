@@ -110,6 +110,10 @@ export const getConversations = async (req, res) => {
         })
             .sort({ lastMessageAt: -1, updatedAt: -1 })
             .populate({
+                path: "lastMessage._id",
+                select: "_id deleted_at deleted_by content createdAt",
+            })
+            .populate({
                 path: "participants.userId",
                 select: "username displayname avatarUrl",
             })
@@ -120,9 +124,10 @@ export const getConversations = async (req, res) => {
             .populate({
                 path: "seenBy",
                 select: "username displayname avatarUrl",
-            });
+            }).lean();
 
         const formatted = conversations.map((convo) => {
+            //console.log("convo: ", convo)
             const participants = (convo.participants || []).map((p) => ({
                 _id: p.userId?._id,
                 displayname: p.userId?.displayname,
@@ -130,12 +135,11 @@ export const getConversations = async (req, res) => {
                 avatarUrl: p.userId?.avatarUrl ?? null,
                 joinedAt: p.joinedAt,
             }));
-
             return {
-                ...convo.toObject(),
+                ...convo,
                 unreadCounts: convo.unreadCounts || {},
                 participants,
-            };
+            }
         });
 
         return res.status(200).json({ conversations: formatted });

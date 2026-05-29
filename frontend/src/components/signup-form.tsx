@@ -47,7 +47,7 @@ export function SignupForm({
       toast.error(
         error instanceof Error
           ? error.message
-          : "Đăng ký thất bại. Vui lòng thử lại."
+          : "Đăng ký thất bại. Vui lòng thử lại.",
       );
     }
   };
@@ -61,7 +61,7 @@ export function SignupForm({
               {/* header - logo */}
               <div className="flex flex-col items-center text-center gap-2">
                 <Link href="/" className="mx-auto block w-fit text-center">
-                  <Image src="/logo.svg" alt="logo" width={50} height={50} />
+                  <Image src="/logo.png" alt="logo" width={60} height={60} />
                 </Link>
 
                 <h1 className="text-2xl font-bold">Tạo tài khoản QuickChat</h1>

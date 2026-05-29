@@ -65,6 +65,28 @@ export const useSocketStore = create<SocketState>((set, get) => ({
       // cập nhật cuộc trò chuyện trong store với thông tin mới nhất về lastMessage và unreadCounts
       useChatStore.getState().updateConversation(updatedConversation);
     });
+    // retrieve-message
+    socket.on(
+      "retrieve-message",
+      ({ message, lastMessage, isRevokeLastMessage }) => {
+        const messageId = message._id.toString() ?? null;
+        const convoId = message.conversationId.toString() ?? null;
+        const deleted_at = message.deleted_at;
+        const deleted_by = message.deleted_by.toString();
+
+        useChatStore
+          .getState()
+          .retrieveMessage(messageId, convoId, deleted_at, deleted_by);
+
+        if (isRevokeLastMessage) {
+          const updatedConversation = {
+            _id: convoId,
+            lastMessage,
+          };
+          useChatStore.getState().updateConversation(updatedConversation);
+        }
+      },
+    );
     // read message
     socket.on("read-message", ({ conversation, lastMessage }) => {
       const updated = {

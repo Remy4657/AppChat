@@ -54,7 +54,7 @@ export const loginUser = async (data) => {
     });
 
     const refreshToken = crypto.randomBytes(64).toString("hex");
-
+    // lưu refreshToken vào database để quản lý phiên đăng nhập
     await Session.create({
         userId: user._id,
         refreshToken,

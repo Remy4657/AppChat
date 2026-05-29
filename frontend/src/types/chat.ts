@@ -21,6 +21,8 @@ export interface LastMessage {
   _id: string;
   content: string;
   createdAt: string;
+  deleted_at: string;
+  deleted_by: string;
   sender: {
     _id: string;
     displayname: string;
@@ -51,6 +53,8 @@ export interface Message {
   senderId: string;
   content: string | null;
   imgUrl?: string | null;
+  deleted_at?: string | null;
+  deleted_by?: string | null;
   updatedAt?: string | null;
   createdAt: string;
   isOwn?: boolean;

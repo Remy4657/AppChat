@@ -25,6 +25,8 @@ const DirectMessageCard = ({ convo }: { convo: Conversation }) => {
 
   const unreadCount = convo.unreadCounts[user._id];
   const lastMessage = convo.lastMessage?.content ?? "";
+  const deleted_at = convo.lastMessage?.deleted_at ?? null;
+  const deleted_by = convo.lastMessage?.deleted_by ?? null;
 
   const handleSelectConversation = async (id: string) => {
     setActiveConversation(id);
@@ -62,16 +64,29 @@ const DirectMessageCard = ({ convo }: { convo: Conversation }) => {
         </>
       }
       subtitle={
-        <p
-          className={cn(
-            "text-sm truncate",
-            unreadCount > 0
-              ? "font-medium text-foreground"
-              : "text-muted-foreground"
-          )}
-        >
-          {lastMessage}
-        </p>
+        !deleted_at && !deleted_by ? (
+          <p
+            className={cn(
+              "text-sm truncate",
+              unreadCount > 0
+                ? "font-medium text-foreground"
+                : "text-muted-foreground",
+            )}
+          >
+            {lastMessage}
+          </p>
+        ) : (
+          <p
+            className={cn(
+              "text-sm truncate italic",
+              unreadCount > 0
+                ? "font-medium text-foreground"
+                : "text-muted-foreground",
+            )}
+          >
+            Tin nhắn đã được thu hồi
+          </p>
+        )
       }
     />
   );
