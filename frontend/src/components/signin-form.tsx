@@ -12,6 +12,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { toast } from "sonner";
+import { signIn as nextAuthSignin } from "next-auth/react";
 
 const signInSchema = z.object({
   username: z.string().min(3, "Tên đăng nhập phải có ít nhất 3 ký tự"),
@@ -45,6 +46,9 @@ export function SigninForm() {
       );
     }
   };
+  const handleGoogleLogin = () => {
+    nextAuthSignin("google", { callbackUrl: "/" });
+  };
 
   return (
     <div className={cn("flex flex-col gap-6")}>
@@ -65,7 +69,6 @@ export function SigninForm() {
                   Đăng nhập để bắt đầu trò chuyện
                 </p>
               </div>
-
               {/* username */}
               <div className="flex flex-col gap-3">
                 <Label htmlFor="username" className="block text-sm">
@@ -83,7 +86,6 @@ export function SigninForm() {
                   </p>
                 )}
               </div>
-
               {/* password */}
               <div className="flex flex-col gap-3">
                 <Label htmlFor="password" className="block text-sm">
@@ -101,13 +103,28 @@ export function SigninForm() {
                   </p>
                 )}
               </div>
-
               {/* nút đăng nhập */}
               <Button type="submit" className="w-full" disabled={isSubmitting}>
                 Đăng nhập
               </Button>
-
-              <div className="text-center text-sm">
+              <span className="text-center text-sm">or</span>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                disabled={isSubmitting}
+                onClick={handleGoogleLogin}
+              >
+                <Image
+                  src="/google.png"
+                  alt="google"
+                  className="pr-1"
+                  width={20}
+                  height={20}
+                />
+                Đăng nhập với Google
+              </Button>
+              <div className="text-center text-sm mt-9">
                 Chưa có tài khoản?{" "}
                 <a href="/signup" className="underline underline-offset-4">
                   Đăng ký

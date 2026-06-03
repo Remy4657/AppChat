@@ -1,11 +1,12 @@
 import express from "express";
-import { register, login, logout, refreshToken } from "../controllers/authController.js";
+import { register, login, loginGoogle, logout, refreshToken } from "../controllers/authController.js";
 
 const router = express.Router();
 
 // POST /api/users/register
 router.post("/signup", register);
 router.post("/signin", login);
+router.post("/signin-google", loginGoogle);
 router.post("/signout", logout);
 router.post("/refresh", refreshToken);
 

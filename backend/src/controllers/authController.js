@@ -1,7 +1,6 @@
 import * as authService from "../services/authService.js";
 
-
-const ACCESS_TOKEN_TTL = 30 * 60 * 1000; // thuờng là dưới 15m
+const ACCESS_TOKEN_TTL = 60 * 60 * 1000; // 1 giờ
 const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000; // 14 ngày
 
 export const register = async (req, res) => {
@@ -56,6 +55,29 @@ export const login = async (req, res) => {
         return res.status(400).json({
             message: `Lỗi khi đăng nhập: ${error.message}`,
         });
+    }
+}
+export const loginGoogle = async (req, res) => {
+    try {
+
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({ error: 'Missing or invalid Authorization header' });
+        }
+        const googleIdToken = authHeader.split(' ')[1];
+        if (!googleIdToken) {
+            return res.status(401).json({ error: 'Missing id_token' });
+        }
+        const { accessToken, refreshToken } = await authService.loginGoogleUser(googleIdToken);
+        res.status(200).json({
+            message: "Login google successful",
+            accessToken,
+            refreshToken
+        });
+
+    } catch (error) {
+        console.log("Error in loginGoogle:", error);
+        return res.status(500).json(error);
     }
 }
 export const logout = async (req, res) => {

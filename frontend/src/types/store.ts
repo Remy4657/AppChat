@@ -18,6 +18,7 @@ export interface AuthState {
     password: string,
   ) => Promise<void>;
   signIn: (username: string, password: string) => Promise<void>;
+  signInGoogle: (googleIdToken: string) => Promise<void>;
   signOut: () => Promise<void>;
   fetchMe: () => Promise<void>;
   refreshToken: () => Promise<void>;

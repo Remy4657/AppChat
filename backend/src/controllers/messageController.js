@@ -111,7 +111,6 @@ export const retrieveMessage = async (req, res) => {
         message.deleted_at = new Date()
         message.deleted_by = userId
         await message.save()
-        console.log("message: ", message)
 
         const conversation = await Conversation.findOneAndUpdate(
             {

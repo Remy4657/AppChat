@@ -6,7 +6,7 @@ export const authService = {
     lastname: string,
     username: string,
     email: string,
-    password: string
+    password: string,
   ) => {
     const res = await api.post("/auth/signup", {
       firstname,
@@ -20,6 +20,19 @@ export const authService = {
   },
   signIn: async (username: string, password: string) => {
     const res = await api.post("/auth/signin", { username, password });
+
+    return res?.data;
+  },
+  signInGoogle: async (googleIdToken: string) => {
+    const res = await api.post(
+      "/auth/signin-google",
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${googleIdToken}`,
+        },
+      },
+    );
 
     return res?.data;
   },

@@ -39,8 +39,20 @@ export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
     signIn: async (username, password) => {
       set({ loading: true });
       try {
-        const { accessToken } = await authService.signIn(username, password);
-        get().setAccessToken(accessToken);
+        await authService.signIn(username, password);
+        // get().setAccessToken(accessToken);
+        await get().fetchMe();
+        useChatStore.getState().fetchConversations();
+      } catch (error) {
+        throw error; // để component biết đăng nhập thất bại, không throw new vì cần lấy lỗi từ response của server để hiển thị thông báo lỗi chính xác
+      } finally {
+        set({ loading: false });
+      }
+    },
+    signInGoogle: async (googleIdToken) => {
+      set({ loading: true });
+      try {
+        await authService.signInGoogle(googleIdToken);
         await get().fetchMe();
         useChatStore.getState().fetchConversations();
       } catch (error) {

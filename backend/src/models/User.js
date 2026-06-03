@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema(
 
         password: {
             type: String,
-            required: true,
+            required: false,
             minlength: 6,
         },
 
@@ -53,6 +53,11 @@ const userSchema = new mongoose.Schema(
             type: String,
             sparse: true, // cho phép null, nhưng không được trùng
         },
+        googleId: {
+            type: String,
+            unique: true,
+            sparse: true,  // cho phép null và không trùng
+        },
     },
     {
         timestamps: true, // thêm createdAt, updatedAt
@@ -61,9 +66,12 @@ const userSchema = new mongoose.Schema(
 
 // hash password
 userSchema.pre("save", async function () {
-    if (!this.isModified("password")) return
+    if (!this.isModified("password") || !this.password) {
+        return
+    }
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
+
 });
 
 const User = mongoose.model("User", userSchema);
