@@ -174,8 +174,37 @@ export const getFriendRequests = async (req, res) => {
             FriendRequest.find({ from: userId }).populate("to", populateFields), // populate để lấy thông tin chi tiết của người nhận lời mời kết bạn, nhưng chỉ lấy những trường cần thiết như _id, displayname, avatarUrl và username.
             FriendRequest.find({ to: userId }).populate("from", populateFields),
         ]);
+        // Lấy danh sách bạn bè hiện tại của userId
+        const friendships = await Friend.find({
+            $or: [{ userA: userId }, { userB: userId }]
+        });
 
-        res.status(200).json({ sent, received });
+        // Tạo Set chứa _id của những người là bạn với userId
+        const friendSet = new Set(
+            friendships.map(f =>
+                f.userA.toString() === userId.toString() ? f.userB.toString() : f.userA.toString()
+            )
+        );
+
+        // Lấy tất cả user, trừ chính userId
+        const allUsers = await User.find({ _id: { $ne: userId } }).select(populateFields).lean();
+
+        // Tạo Map để tra cứu nhanh
+        const sentMap = new Map(); // key = to userId, value = true
+        sent.forEach(req => sentMap.set(req.to._id.toString(), true));
+
+        const receivedMap = new Map(); // key = from userId, value = true
+        received.forEach(req => receivedMap.set(req.from._id.toString(), true));
+
+        // Gắn flag cho từng user
+        const usersWithFlags = allUsers.map(user => ({
+            ...user, // since we're using .lean(), 'user' is already a plain object
+            isSentRequest: sentMap.has(user._id.toString()) || false,
+            isReceivedRequest: receivedMap.has(user._id.toString()) || false,
+            isFriend: friendSet.has(user._id.toString()) || false // kiểm tra xem user có phải là bạn của userId hay không bằng cách kiểm tra xem _id của user có tồn tại trong friendSet hay không. Nếu tồn tại, thì gắn isFriend là true, ngược lại là false.
+        }));
+
+        res.status(200).json({ sent, received, allUsers: usersWithFlags });
     } catch (error) {
         console.error("Lỗi khi lấy danh sách yêu cầu kết bạn", error);
         return res.status(500).json({ message: "Lỗi hệ thống" });

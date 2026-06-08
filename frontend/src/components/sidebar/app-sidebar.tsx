@@ -2,9 +2,6 @@
 
 import * as React from "react";
 
-import { NavMain } from "@/components/sidebar/nav-main";
-import { NavProjects } from "@/components/sidebar/nav-projects";
-import { NavSecondary } from "@/components/sidebar/nav-secondary";
 import { NavUser } from "@/components/sidebar/nav-user";
 import CreateNewChat from "@/components/chat/CreateNewChat";
 import GroupChatList from "@/components/chat/GroupChatList";
@@ -30,6 +27,9 @@ import { useThemeStore } from "@/stores/useThemeStore";
 import { useChatStore } from "@/stores/useChatStore";
 import AddFriendModal from "../chat/AddFriendModal";
 import NewGroupChatModal from "../chat/NewGroupChatModal";
+import UserListModal from "../newContact/UserListModal";
+import { Button } from "../ui/button";
+import { Dialog, DialogTrigger } from "../ui/dialog";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { isDark, toggleTheme } = useThemeStore();
@@ -74,7 +74,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarGroupLabel className="uppercase">
               nhóm chat
             </SidebarGroupLabel>
-            <NewGroupChatModal />
+            <NewGroupChatModal isFirstCreateGroup={false} />
           </div>
 
           <SidebarGroupContent>
@@ -86,7 +86,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarGroup>
           <SidebarGroupLabel className="uppercase">bạn bè</SidebarGroupLabel>
           <SidebarGroupAction title="Kết Bạn">
-            <AddFriendModal />
+            <UserListModal isFirstCreateDirect={false} />
+            {/* <AddFriendModal /> */}
           </SidebarGroupAction>
 
           <SidebarGroupContent>

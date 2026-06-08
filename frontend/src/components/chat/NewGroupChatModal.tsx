@@ -9,7 +9,7 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { Button } from "../ui/button";
-import { UserPlus, Users } from "lucide-react";
+import { UserPlus, Users, UserPlus2 } from "lucide-react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import type { Friend } from "@/types/user";
@@ -18,7 +18,9 @@ import SelectedUsersList from "../newGroupChat/SelectedUserList";
 import { toast } from "sonner";
 import { useChatStore } from "@/stores/useChatStore";
 
-const NewGroupChatModal = () => {
+const NewGroupChatModal = (props: { isFirstCreateGroup: boolean }) => {
+  const { isFirstCreateGroup } = props;
+
   const [groupName, setGroupName] = useState("");
   const [search, setSearch] = useState("");
   const { friends, getFriends } = useFriendStore();
@@ -70,15 +72,33 @@ const NewGroupChatModal = () => {
 
   return (
     <Dialog>
-      <DialogTrigger onClick={handleGetFriends} className="cursor-pointer">
-        {/* <Button
-          variant="ghost"
-          className="flex z-10 justify-center items-center size-5 rounded-full hover:bg-sidebar-accent transition cursor-pointer"
-        > */}
-        <Users className="size-4" />
-        <span className="sr-only">Tạo nhóm</span>
-        {/* </Button> */}
-      </DialogTrigger>
+      <DialogTrigger
+        onClick={handleGetFriends}
+        className="cursor-pointer"
+        render={(triggerProps) => {
+          if (isFirstCreateGroup) {
+            return (
+              <div className="flex items-center justify-center flex-col">
+                <h1 className="">Chưa có nhóm, tạo nhóm ngay để chat!</h1>
+                <Button {...triggerProps} className="mt-2" variant="primary">
+                  Tạo nhóm
+                </Button>
+              </div>
+            );
+          }
+          return (
+            <Button
+              {...triggerProps}
+              variant="ghost"
+              className="flex z-10 justify-center items-center size-5 rounded-full hover:bg-sidebar-accent transition cursor-pointer"
+            >
+              <UserPlus className="size-4" />
+
+              <span className="sr-only">Tạo nhóm</span>
+            </Button>
+          );
+        }}
+      />
 
       <DialogContent className="sm:max-w-[425px] border-none">
         <DialogHeader>

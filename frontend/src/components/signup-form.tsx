@@ -53,7 +53,7 @@ export function SignupForm({
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn("flex flex-col gap-6 p-0", className)} {...props}>
       <Card className="overflow-hidden p-0 border-border">
         <CardContent className="grid p-0 md:grid-cols-2">
           <form className="p-6 md:p-8" onSubmit={handleSubmit(onSubmit)}>
@@ -167,14 +167,13 @@ export function SignupForm({
               </div>
             </div>
           </form>
-          <div className="bg-muted relative hidden md:block">
+          <div className="bg-muted hidden md:block">
             <Image
-              src="/placeholderSignUp.png"
+              src="/placeholder-signin.png"
               alt="Image"
-              objectFit="cover"
-              className="absolute top-1/2 -translate-y-1/2"
+              className="object-contain bg-background"
               width={500}
-              height={500}
+              height={700}
             />
           </div>
         </CardContent>

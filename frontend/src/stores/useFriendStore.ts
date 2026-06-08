@@ -7,6 +7,7 @@ export const useFriendStore = create<FriendState>((set, get) => ({
   loading: false,
   receivedList: [],
   sentList: [],
+  listAllUsers: [],
   searchByUsername: async (username) => {
     try {
       set({ loading: true });
@@ -25,14 +26,20 @@ export const useFriendStore = create<FriendState>((set, get) => ({
     try {
       set({ loading: true });
       const resultMessage = await friendService.sendFriendRequest(to, message);
+      set((state) => ({
+        listAllUsers: state.listAllUsers.map((user) => {
+          if (user._id === to) {
+            return { ...user, isSentRequest: true };
+          }
+          return user;
+        }),
+      }));
       return resultMessage;
     } catch (error: any) {
       throw new Error(
         error?.response?.data?.message ||
-          "Lỗi xảy ra khi gửi kết bạn. Hãy thử lại"
+          "Lỗi xảy ra khi gửi kết bạn. Hãy thử lại",
       );
-      // console.error(error?.message);
-      // return "Lỗi xảy ra khi gửi kết bạn. Hãy thử lại";
     } finally {
       set({ loading: false });
     }
@@ -45,9 +52,9 @@ export const useFriendStore = create<FriendState>((set, get) => ({
 
       if (!result) return;
 
-      const { received, sent } = result;
+      const { received, sent, allUsers } = result;
 
-      set({ receivedList: received, sentList: sent });
+      set({ receivedList: received, sentList: sent, listAllUsers: allUsers });
     } catch (error) {
       console.error("Lỗi xảy ra khi getAllFriendRequests", error);
     } finally {

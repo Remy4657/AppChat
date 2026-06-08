@@ -57,7 +57,7 @@ const SearchForm = ({
 
       <DialogFooter>
         <DialogClose
-          className="flex-1 glass hover:text-destructive cursor-pointer"
+          className="flex-1 glass hover:text-destructive cursor-pointer rounded-2xl"
           onClick={onCancel}
         >
           Cancel

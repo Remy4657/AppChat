@@ -3,7 +3,6 @@ import FriendRequestItem from "./FriendRequestItem";
 
 const SentRequests = () => {
   const { sentList } = useFriendStore();
-  console.log("Sent Requests:", sentList);
 
   if (!sentList || sentList.length === 0) {
     return (

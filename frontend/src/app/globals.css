@@ -367,4 +367,7 @@
   body {
     @apply bg-background text-foreground;
   }
+  img {
+    height: 100%;
+  }
 }

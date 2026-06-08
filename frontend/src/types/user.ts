@@ -14,6 +14,9 @@ export interface Friend {
   displayname: string;
   username: string;
   avatarUrl?: string;
+  isFriend?: boolean;
+  isSentRequest?: boolean;
+  isReceivedRequest?: boolean;
 }
 
 export interface FriendRequest {
@@ -27,6 +30,7 @@ export interface FriendRequest {
   to?: {
     _id: string;
     username: string;
+    email?: string;
     displayname: string;
     avatarUrl?: string;
   };

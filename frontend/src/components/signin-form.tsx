@@ -132,13 +132,13 @@ export function SigninForm() {
               </div>
             </div>
           </form>
-          <div className="bg-muted relative hidden md:block">
+          <div className="bg-muted hidden md:block">
             <Image
-              src="/placeholder.png"
+              src="/placeholder-signin.png"
               alt="Image"
-              className="absolute top-1/2 -translate-y-1/2 object-cover"
+              className="object-cover"
               width={500}
-              height={500}
+              height={700}
             />
           </div>
         </CardContent>

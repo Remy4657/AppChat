@@ -13,8 +13,8 @@ export const friendService = {
   async getAllFriendRequest() {
     try {
       const res = await api.get("/friends/requests");
-      const { sent, received } = res.data;
-      return { sent, received };
+      const { sent, received, allUsers } = res.data;
+      return { sent, received, allUsers };
     } catch (error) {
       console.error("Lỗi khi gửi getAllFriendRequest", error);
     }
