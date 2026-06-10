@@ -59,7 +59,13 @@ export function SigninForm() {
               {/* header - logo */}
               <div className="flex flex-col items-center text-center gap-2">
                 <Link href="/" className="mx-auto block w-fit text-center">
-                  <Image src="/logo.png" alt="logo" width={60} height={60} />
+                  <Image
+                    src="/logo.png"
+                    alt="logo"
+                    width={60}
+                    height={60}
+                    loading="eager"
+                  />
                 </Link>
 
                 {/* <h1 className="text-2xl font-bold">

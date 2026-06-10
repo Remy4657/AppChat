@@ -25,8 +25,6 @@ const UserListModal = (props: { isFirstCreateDirect: boolean }) => {
   const { isFirstCreateDirect } = props;
   const { listAllUsers, addFriend, declineRequest, acceptRequest } =
     useFriendStore();
-  const { createConversation } = useChatStore();
-
   useEffect(() => {
     useFriendStore.getState().getAllFriendRequests();
   }, []);

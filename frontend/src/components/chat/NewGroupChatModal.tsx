@@ -1,3 +1,4 @@
+"use client";
 import { useFriendStore } from "@/stores/useFriendStore";
 import { useState } from "react";
 import {

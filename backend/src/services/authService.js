@@ -6,7 +6,7 @@ import { OAuth2Client } from "google-auth-library";
 import User from "../models/User.js";
 import Session from "../models/Session.js";
 
-const ACCESS_TOKEN_TTL = "1h"; // thuờng là dưới 15m
+const ACCESS_TOKEN_TTL = "1d"; // thuờng là dưới 15m
 const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000; // 14 ngày
 
 export const registerUser = async (data) => {

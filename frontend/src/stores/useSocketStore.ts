@@ -3,6 +3,7 @@ import { io, type Socket } from "socket.io-client";
 import { useAuthStore } from "./useAuthStore";
 import type { SocketState } from "@/types/store";
 import { useChatStore } from "./useChatStore";
+import { useFriendStore } from "./useFriendStore";
 
 export const useSocketStore = create<SocketState>((set, get) => ({
   socket: null,
@@ -103,6 +104,27 @@ export const useSocketStore = create<SocketState>((set, get) => ({
     socket.on("new-group", (conversation) => {
       useChatStore.getState().addConvo(conversation); // cập nhật danh sách conversation trong store
       socket.emit("join-conversation", conversation._id); // sự kiện "join-conversation" với conversationId của cuộc trò chuyện nhóm đó để tự động tham gia vào phòng chat của cuộc trò chuyện nhóm mới mà không cần phải chờ người dùng click vào cuộc trò chuyện đó trong giao diện, việc này giúp đảm bảo rằng người dùng sẽ nhận được tin nhắn từ cuộc trò chuyện nhóm mới ngay cả khi họ chưa kịp mở cuộc trò chuyện đó lên
+    });
+    socket.on("send-request-friend", (resultRequestFrom) => {
+      console.log("resultRequestFrom: ", resultRequestFrom);
+      useFriendStore.setState((state) => ({
+        receivedList: [resultRequestFrom, ...state.receivedList],
+        listAllUsers: state.listAllUsers.filter(
+          (item) => item._id !== resultRequestFrom.from._id,
+        ),
+      }));
+    });
+    socket.on("decline-request-friend", (idUserReceivedRequest) => {
+      useFriendStore.setState((state) => ({
+        sentList: state.sentList.filter(
+          (item) => item.to?._id !== idUserReceivedRequest,
+        ),
+        listAllUsers: state.listAllUsers.map((item) =>
+          item._id === idUserReceivedRequest && item.isSentRequest === true
+            ? { ...item, isSentRequest: false }
+            : item,
+        ),
+      }));
     });
   },
 

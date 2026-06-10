@@ -256,6 +256,7 @@ export const useChatStore = create<ChatState>()(
             await chatService.createConversation(type, name, memberIds);
           get().setActiveConversation(conversation._id);
           if (!isExistConversation) {
+            // isExistConversation chỉ áp dụng kiểm tra cho trò chuyện trực tiếp )
             // isExistConversation: nếu đã mở xem cuộc trò chuyện trước đó rồi (convo đã có trong store)
             get().addConvo(conversation);
             // sau khi tạo xong cuộc trò chuyện (group hoặc direct ở chức năng tạo nhóm hoặc "Gửi tin nhắn mới") thì tự động join vào phòng của cuộc trò chuyện đó luôn để nhận/gửi tin nhắn

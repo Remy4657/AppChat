@@ -8,7 +8,7 @@ export const friendService = {
 
   async sendFriendRequest(to: string, message?: string) {
     const res = await api.post("/friends/requests", { to, message });
-    return res.data.message;
+    return res.data;
   },
   async getAllFriendRequest() {
     try {
@@ -31,7 +31,8 @@ export const friendService = {
 
   async declineRequest(requestId: string) {
     try {
-      await api.post(`/friends/requests/${requestId}/decline`);
+      const res = await api.post(`/friends/requests/${requestId}/decline`);
+      return res.data;
     } catch (error) {
       console.error("Lỗi khi gửi declineRequest", error);
     }

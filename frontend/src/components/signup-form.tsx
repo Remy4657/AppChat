@@ -174,6 +174,7 @@ export function SignupForm({
               className="object-contain bg-background"
               width={500}
               height={700}
+              loading="eager"
             />
           </div>
         </CardContent>

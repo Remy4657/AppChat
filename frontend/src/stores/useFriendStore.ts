@@ -25,7 +25,8 @@ export const useFriendStore = create<FriendState>((set, get) => ({
   addFriend: async (to, message) => {
     try {
       set({ loading: true });
-      const resultMessage = await friendService.sendFriendRequest(to, message);
+      const { message: resultMessage, resultRequest } =
+        await friendService.sendFriendRequest(to, message);
       set((state) => ({
         listAllUsers: state.listAllUsers.map((user) => {
           if (user._id === to) {
@@ -33,6 +34,7 @@ export const useFriendStore = create<FriendState>((set, get) => ({
           }
           return user;
         }),
+        sentList: [resultRequest, ...state.sentList],
       }));
       return resultMessage;
     } catch (error: any) {
@@ -76,10 +78,19 @@ export const useFriendStore = create<FriendState>((set, get) => ({
   declineRequest: async (requestId) => {
     try {
       set({ loading: true });
-      await friendService.declineRequest(requestId);
-
+      const { requestFrom } = await friendService.declineRequest(requestId);
+      console.log("requestFrom: ", requestFrom);
       set((state) => ({
         receivedList: state.receivedList.filter((r) => r._id !== requestId),
+        listAllUsers: [
+          {
+            ...requestFrom,
+            isFriend: false,
+            isReceivedRequest: false,
+            isSentRequest: false,
+          },
+          ...state.listAllUsers,
+        ],
       }));
     } catch (error) {
       console.error("Lỗi xảy ra khi declineRequest", error);

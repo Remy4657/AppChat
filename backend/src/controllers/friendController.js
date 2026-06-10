@@ -1,3 +1,4 @@
+import { io } from "../socket/index.js";
 import Friend from "../models/Friend.js";
 import User from "../models/User.js";
 import FriendRequest from "../models/FriendRequest.js";
@@ -47,15 +48,24 @@ export const sendFriendRequest = async (req, res) => {
             return res.status(400).json({ message: "Đã có lời mời kết bạn đang chờ" });
         }
 
-        const request = await FriendRequest.create({
+        const createdRequest = await FriendRequest.create({
             from,
             to,
             message,
         });
+        const resultRequest = await FriendRequest.findById(createdRequest._id)
+            .populate("to", "_id username displayname avatarUrl")
+            .lean();
+
+        const resultRequestFrom = await FriendRequest.findById(createdRequest._id)
+            .populate("from", "_id username displayname avatarUrl")
+            .lean();
+
+        io.to(to.toString()).emit("send-request-friend", resultRequestFrom)
 
         return res
             .status(201)
-            .json({ message: "Gửi lời mời kết bạn thành công", request });
+            .json({ message: "Gửi lời mời kết bạn thành công", resultRequest });
     } catch (error) {
         console.error("Lỗi khi gửi yêu cầu kết bạn", error);
         return res.status(500).json({ message: "Lỗi hệ thống" });
@@ -109,7 +119,7 @@ export const declineFriendRequest = async (req, res) => {
         const { requestId } = req.params;
         const userId = req.user._id;
 
-        const request = await FriendRequest.findById(requestId);
+        const request = await FriendRequest.findById(requestId).populate("from", "_id username displayname avatarUrl").lean()
 
         if (!request) {
             return res.status(404).json({ message: "Không tìm thấy lời mời kết bạn" });
@@ -123,7 +133,9 @@ export const declineFriendRequest = async (req, res) => {
 
         await FriendRequest.findByIdAndDelete(requestId);
 
-        return res.sendStatus(204);
+        io.to(request.from._id.toString()).emit("decline-request-friend", userId.toString())
+
+        return res.status(200).json({ requestFrom: { ...request.from, _id: request.from._id.toString() } });
     } catch (error) {
         console.error("Lỗi khi từ chối lời mời kết bạn", error);
         return res.status(500).json({ message: "Lỗi hệ thống" });
@@ -174,6 +186,7 @@ export const getFriendRequests = async (req, res) => {
             FriendRequest.find({ from: userId }).populate("to", populateFields), // populate để lấy thông tin chi tiết của người nhận lời mời kết bạn, nhưng chỉ lấy những trường cần thiết như _id, displayname, avatarUrl và username.
             FriendRequest.find({ to: userId }).populate("from", populateFields),
         ]);
+
         // Lấy danh sách bạn bè hiện tại của userId
         const friendships = await Friend.find({
             $or: [{ userA: userId }, { userB: userId }]

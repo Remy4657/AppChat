@@ -30,7 +30,7 @@ export const authOptions: NextAuthOptions = {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             path: "/",
-            maxAge: 60 * 60, // 1 hour
+            maxAge: 60 * 60 * 24, // 1 day
           });
 
           cookieStore.set("refreshToken", refreshToken, {

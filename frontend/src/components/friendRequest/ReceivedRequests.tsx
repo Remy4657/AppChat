@@ -32,7 +32,7 @@ const ReceivedRequests = () => {
       console.error(error);
     }
   };
-
+  console.log("receivedList: ", receivedList);
   return (
     <div className="space-y-3 mt-4">
       {receivedList.map((req) => (
