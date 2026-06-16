@@ -106,7 +106,6 @@ export const useSocketStore = create<SocketState>((set, get) => ({
       socket.emit("join-conversation", conversation._id); // sự kiện "join-conversation" với conversationId của cuộc trò chuyện nhóm đó để tự động tham gia vào phòng chat của cuộc trò chuyện nhóm mới mà không cần phải chờ người dùng click vào cuộc trò chuyện đó trong giao diện, việc này giúp đảm bảo rằng người dùng sẽ nhận được tin nhắn từ cuộc trò chuyện nhóm mới ngay cả khi họ chưa kịp mở cuộc trò chuyện đó lên
     });
     socket.on("send-request-friend", (resultRequestFrom) => {
-      console.log("resultRequestFrom: ", resultRequestFrom);
       useFriendStore.setState((state) => ({
         receivedList: [resultRequestFrom, ...state.receivedList],
         listAllUsers: state.listAllUsers.filter(
@@ -126,6 +125,25 @@ export const useSocketStore = create<SocketState>((set, get) => ({
         ),
       }));
     });
+    socket.on(
+      "accept-request-friend",
+      (idUserReceivedRequest, acceptFriend) => {
+        console.log("acceptFriend: ", acceptFriend);
+
+        useFriendStore.setState((state) => ({
+          receivedList: [acceptFriend, ...state.receivedList],
+          sentList: state.sentList.filter(
+            (item) => item.to?._id !== idUserReceivedRequest,
+          ),
+
+          listAllUsers: state.listAllUsers.map((item) =>
+            item._id === idUserReceivedRequest && item.isSentRequest === true
+              ? { ...item, isSentRequest: false, isFriend: true }
+              : item,
+          ),
+        }));
+      },
+    );
   },
 
   disconnectSocket: () => {

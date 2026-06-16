@@ -34,7 +34,9 @@ export interface FriendRequest {
     displayname: string;
     avatarUrl?: string;
   };
+  type?: string;
   message: string;
+  is_read: boolean;
   createdAt: string;
   updatedAt: string;
 }

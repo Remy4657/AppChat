@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+// subdocument schema
 const participantSchema = new mongoose.Schema(
     {
         userId: {
@@ -16,7 +17,7 @@ const participantSchema = new mongoose.Schema(
         _id: false,
     }
 );
-
+// subdocument schema
 const groupSchema = new mongoose.Schema(
     {
         name: {

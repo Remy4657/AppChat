@@ -64,7 +64,7 @@ export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
     signOut: async () => {
       try {
         get().clearState(); // xóa state ngay lập tức để tránh trường hợp token cũ vẫn còn trong state khi signOut thất bại, tuy nhiên nếu signOut thất bại thì token cũng sẽ bị backend invalidate nên cũng không ảnh hưởng gì
-        useChatStore.getState().reset();
+        // useChatStore.getState().reset();
         await authService.signOut();
       } catch (error) {
         throw error; // để component biết đăng nhập thất bại, không throw new vì đã có interceptor của axios handle rồi

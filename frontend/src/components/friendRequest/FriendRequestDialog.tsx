@@ -35,11 +35,11 @@ const FriendRequestDialog = ({ open, setOpen }: FriendRequestDialogProps) => {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Lời mời kết bạn</DialogTitle>
+          {/* <DialogTitle>Lời mời kết bạn</DialogTitle> */}
         </DialogHeader>
         <Tabs value={tab} onValueChange={setTab} className="w-full flex-col">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="received">Đã nhận</TabsTrigger>
+            <TabsTrigger value="received">Thông báo</TabsTrigger>
             <TabsTrigger value="sent">Đã gửi</TabsTrigger>
           </TabsList>
 

@@ -1,4 +1,5 @@
 import { friendService } from "@/services/friendService";
+import { notificationService } from "@/services/notificationService";
 import type { FriendState } from "@/types/store";
 import { create } from "zustand";
 
@@ -8,6 +9,15 @@ export const useFriendStore = create<FriendState>((set, get) => ({
   receivedList: [],
   sentList: [],
   listAllUsers: [],
+
+  resetReceivedList: () => {
+    set((state) => ({
+      receivedList: state.receivedList.map((obj) => ({
+        ...obj,
+        is_read: true,
+      })),
+    }));
+  },
   searchByUsername: async (username) => {
     try {
       set({ loading: true });
@@ -25,7 +35,7 @@ export const useFriendStore = create<FriendState>((set, get) => ({
   addFriend: async (to, message) => {
     try {
       set({ loading: true });
-      const { message: resultMessage, resultRequest } =
+      const { message: resultMessage, resultRequestTo } =
         await friendService.sendFriendRequest(to, message);
       set((state) => ({
         listAllUsers: state.listAllUsers.map((user) => {
@@ -34,7 +44,7 @@ export const useFriendStore = create<FriendState>((set, get) => ({
           }
           return user;
         }),
-        sentList: [resultRequest, ...state.sentList],
+        sentList: [resultRequestTo, ...state.sentList],
       }));
       return resultMessage;
     } catch (error: any) {
@@ -50,13 +60,36 @@ export const useFriendStore = create<FriendState>((set, get) => ({
     try {
       set({ loading: true });
 
-      const result = await friendService.getAllFriendRequest();
+      const [friendResult, notificationResult] = await Promise.all([
+        friendService.getAllFriendRequest(),
+        notificationService.getAllNotification(),
+      ]);
 
-      if (!result) return;
+      if (!friendResult) {
+        set({ loading: false });
+        return;
+      }
 
-      const { received, sent, allUsers } = result;
+      const { received, sent, allUsers } = friendResult;
 
-      set({ receivedList: received, sentList: sent, listAllUsers: allUsers });
+      const acceptNotifications = notificationResult?.listAccept ?? [];
+
+      // Gộp danh sách lời mời nhận được và thông báo chấp nhận
+      const combinedList = [...received, ...acceptNotifications];
+
+      // Sắp xếp theo createdAt mới nhất (hỗ trợ cả createdAt và created_at)
+      const sortedCombined = combinedList.sort((a, b) => {
+        const dateA = new Date(a.createdAt || 0);
+        const dateB = new Date(b.createdAt || 0);
+        return dateB.getTime() - dateA.getTime(); // mới hơn đứng trước
+      });
+
+      set({
+        receivedList: sortedCombined,
+        sentList: sent,
+        listAllUsers: allUsers,
+        loading: false,
+      });
     } catch (error) {
       console.error("Lỗi xảy ra khi getAllFriendRequests", error);
     } finally {
@@ -79,7 +112,6 @@ export const useFriendStore = create<FriendState>((set, get) => ({
     try {
       set({ loading: true });
       const { requestFrom } = await friendService.declineRequest(requestId);
-      console.log("requestFrom: ", requestFrom);
       set((state) => ({
         receivedList: state.receivedList.filter((r) => r._id !== requestId),
         listAllUsers: [

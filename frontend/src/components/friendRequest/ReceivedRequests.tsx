@@ -32,36 +32,44 @@ const ReceivedRequests = () => {
       console.error(error);
     }
   };
-  console.log("receivedList: ", receivedList);
   return (
     <div className="space-y-3 mt-4">
-      {receivedList.map((req) => (
-        <FriendRequestItem
-          key={req._id}
-          requestInfo={req}
-          actions={
-            <div className="flex gap-2">
-              <Button
-                size="sm"
-                variant="primary"
-                onClick={() => handleAccept(req._id)}
-                disabled={loading}
-              >
-                Chấp nhận
-              </Button>
-              <Button
-                size="sm"
-                variant="destructiveOutline"
-                onClick={() => handleDecline(req._id)}
-                disabled={loading}
-              >
-                Từ chối
-              </Button>
-            </div>
-          }
-          type="received"
-        />
-      ))}
+      {receivedList.map((req) =>
+        req.type == "friend_accept" ? (
+          <div
+            key={req._id}
+            className="flex flex-col border-b border-gray-300 p-3 gap-3"
+          >
+            <p className="text-gray-800">{req.message}</p>
+          </div>
+        ) : (
+          <FriendRequestItem
+            key={req._id}
+            requestInfo={req}
+            actions={
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant="primary"
+                  onClick={() => handleAccept(req._id)}
+                  disabled={loading}
+                >
+                  Chấp nhận
+                </Button>
+                <Button
+                  size="sm"
+                  variant="destructiveOutline"
+                  onClick={() => handleDecline(req._id)}
+                  disabled={loading}
+                >
+                  Từ chối
+                </Button>
+              </div>
+            }
+            type="received"
+          />
+        ),
+      )}
     </div>
   );
 };

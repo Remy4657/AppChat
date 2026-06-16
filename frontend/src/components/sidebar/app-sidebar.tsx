@@ -19,7 +19,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Moon, Sun } from "lucide-react";
+import { Bell, Moon, Sun } from "lucide-react";
 import { Switch } from "../ui/switch";
 import ConversationSkeleton from "../skeleton/ConversationSkeleton";
 import { useAuthStore } from "@/stores/useAuthStore";
@@ -30,74 +30,104 @@ import NewGroupChatModal from "../chat/NewGroupChatModal";
 import UserListModal from "../newContact/UserListModal";
 import { Button } from "../ui/button";
 import { Dialog, DialogTrigger } from "../ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+} from "../ui/dropdown-menu";
+import FriendRequestDialog from "../friendRequest/FriendRequestDialog";
+import UnreadCountBadge from "../chat/UnreadCountBadge";
+import { useFriendStore } from "@/stores/useFriendStore";
+import { useNotificationStore } from "@/stores/useNotificationStore";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { isDark, toggleTheme } = useThemeStore();
   const user = useAuthStore((state) => state.user);
+  const { receivedList } = useFriendStore();
+  const { markReadNotification } = useNotificationStore();
+  const receivedListUnread = receivedList.filter(
+    (item) => item.is_read == false,
+  );
+
   const { convoLoading } = useChatStore();
+  const [friendRequestOpen, setfriendRequestOpen] = React.useState(false);
+  const handleClickBell = () => {
+    setfriendRequestOpen(true);
+    markReadNotification();
+  };
+
   return (
-    <Sidebar variant="inset" {...props}>
-      {/* Header */}
-      <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton size="lg" className="bg-gradient-primary">
-              <div className="flex w-full items-center px-2 justify-between">
-                <h1 className="text-xl font-bold text-white">QuickChat</h1>
-                <div className="flex items-center gap-2">
-                  <Sun className="size-4 text-white/80" />
-                  <Switch
-                    checked={isDark}
-                    onCheckedChange={toggleTheme}
-                    className="data-[state=checked]:bg-background/80 cursor-pointer"
-                  />
-                  <Moon className="size-4 text-white/80" />
+    <>
+      <Sidebar variant="inset" {...props}>
+        {/* Header */}
+        <SidebarHeader>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton variant="default" size="lg" className="">
+                <div className="flex w-full items-center px-2 justify-between">
+                  <h1 className="text-xl font-bold">QuickChat</h1>
+                  <DropdownMenu>
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem onClick={() => handleClickBell()}>
+                        <Bell
+                          size={12}
+                          className="dark:group-focus:!text-accent-foreground"
+                        />
+                        <UnreadCountBadge
+                          unreadCount={receivedListUnread.length}
+                        />
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                  </DropdownMenu>
                 </div>
-              </div>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarHeader>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarHeader>
 
-      {/* Content */}
-      <SidebarContent className="beautiful-scrollbar">
-        {/* New Chat */}
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <CreateNewChat />
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {/* Content */}
+        <SidebarContent className="beautiful-scrollbar">
+          {/* New Chat */}
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <CreateNewChat />
+            </SidebarGroupContent>
+          </SidebarGroup>
 
-        {/* Group Chat */}
-        <SidebarGroup>
-          <div className="flex items-center justify-between">
-            <SidebarGroupLabel className="uppercase">
-              nhóm chat
-            </SidebarGroupLabel>
-            <NewGroupChatModal isFirstCreateGroup={false} />
-          </div>
+          {/* Group Chat */}
+          <SidebarGroup>
+            <div className="flex items-center justify-between">
+              <SidebarGroupLabel className="uppercase">
+                nhóm chat
+              </SidebarGroupLabel>
+              <NewGroupChatModal isFirstCreateGroup={false} />
+            </div>
 
-          <SidebarGroupContent>
-            {convoLoading ? <ConversationSkeleton /> : <GroupChatList />}
-          </SidebarGroupContent>
-        </SidebarGroup>
+            <SidebarGroupContent>
+              {convoLoading ? <ConversationSkeleton /> : <GroupChatList />}
+            </SidebarGroupContent>
+          </SidebarGroup>
 
-        {/* Dirrect Message */}
-        <SidebarGroup>
-          <SidebarGroupLabel className="uppercase">bạn bè</SidebarGroupLabel>
-          <SidebarGroupAction title="Kết Bạn">
-            <UserListModal isFirstCreateDirect={false} />
-            {/* <AddFriendModal /> */}
-          </SidebarGroupAction>
+          {/* Dirrect Message */}
+          <SidebarGroup>
+            <SidebarGroupLabel className="uppercase">bạn bè</SidebarGroupLabel>
+            <SidebarGroupAction title="Kết Bạn">
+              <UserListModal isFirstCreateDirect={false} />
+              {/* <AddFriendModal /> */}
+            </SidebarGroupAction>
 
-          <SidebarGroupContent>
-            {convoLoading ? <ConversationSkeleton /> : <DirectMessageList />}
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
+            <SidebarGroupContent>
+              {convoLoading ? <ConversationSkeleton /> : <DirectMessageList />}
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
 
-      {/* Footer */}
-      <SidebarFooter>{user && <NavUser user={user} />}</SidebarFooter>
-    </Sidebar>
+        {/* Footer */}
+        <SidebarFooter>{user && <NavUser user={user} />}</SidebarFooter>
+      </Sidebar>
+      <FriendRequestDialog
+        open={friendRequestOpen}
+        setOpen={setfriendRequestOpen}
+      />
+    </>
   );
 }

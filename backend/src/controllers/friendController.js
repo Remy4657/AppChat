@@ -2,6 +2,7 @@ import { io } from "../socket/index.js";
 import Friend from "../models/Friend.js";
 import User from "../models/User.js";
 import FriendRequest from "../models/FriendRequest.js";
+import Notification from "../models/Notification.js";
 
 export const sendFriendRequest = async (req, res) => {
     try {
@@ -43,17 +44,33 @@ export const sendFriendRequest = async (req, res) => {
         if (alreadyFriends) {
             return res.status(400).json({ message: "Hai người đã là bạn bè" });
         }
-
         if (existingRequest) {
             return res.status(400).json({ message: "Đã có lời mời kết bạn đang chờ" });
         }
 
+        const detailedTo = await User.findById(to)
+            .lean();
+        const detailedFrom = await User.findById(from)
+            .lean();
+
+        const notificationContent = `${detailedFrom.displayname || detailedFrom.username} đã gửi lời mời kết bạn.`;
+
+        const notication = await Notification.create({
+            userId: to,
+            actorId: from,
+            content: notificationContent,
+            type: 'friend_request',
+            is_read: false
+        });
+
         const createdRequest = await FriendRequest.create({
             from,
             to,
+            notification_id: notication._id,
             message,
         });
-        const resultRequest = await FriendRequest.findById(createdRequest._id)
+
+        const resultRequestTo = await FriendRequest.findById(createdRequest._id)
             .populate("to", "_id username displayname avatarUrl")
             .lean();
 
@@ -61,11 +78,11 @@ export const sendFriendRequest = async (req, res) => {
             .populate("from", "_id username displayname avatarUrl")
             .lean();
 
-        io.to(to.toString()).emit("send-request-friend", resultRequestFrom)
+        io.to(to.toString()).emit("send-request-friend", { ...resultRequestFrom, is_read: false, message: notificationContent })
 
         return res
             .status(201)
-            .json({ message: "Gửi lời mời kết bạn thành công", resultRequest });
+            .json({ message: "Gửi lời mời kết bạn thành công", resultRequestTo });
     } catch (error) {
         console.error("Lỗi khi gửi yêu cầu kết bạn", error);
         return res.status(500).json({ message: "Lỗi hệ thống" });
@@ -77,35 +94,46 @@ export const acceptFriendRequest = async (req, res) => {
         const { requestId } = req.params;
         const userId = req.user._id;
 
-        const request = await FriendRequest.findById(requestId);
+        const request = await FriendRequest.findById(requestId)
+            .populate("from", "_id displayname username")
+            .populate("to", "_id displayname username")
 
         if (!request) {
             return res.status(404).json({ message: "Không tìm thấy lời mời kết bạn" });
         }
         // kiểm tra xem người dùng hiện tại có phải là người nhận lời mời kết bạn hay không, nếu không phải thì trả về lỗi 403 Forbidden
-        if (request.to.toString() !== userId.toString()) {
+        if (request.to._id.toString() !== userId.toString()) {
             return res
                 .status(403)
                 .json({ message: "Bạn không có quyền chấp nhận lời mời này" });
         }
 
-        const friend = await Friend.create({
-            userA: request.from,
-            userB: request.to,
+        await Friend.create({
+            userA: request.from._id,
+            userB: request.to._id,
         });
+        const notificationContent = `${request.to.displayname || request.to.username} đã chấp nhận lời mời kết bạn của bạn.`;
+
+        const notification = await Notification.create({
+            userId: request.from._id,
+            actorId: request.to._id,
+            type: 'friend_accept',
+            content: notificationContent,
+            is_read: false
+        });
+        const { userId: x, actorId: y, ...rest } = notification.toObject()
+
 
         await FriendRequest.findByIdAndDelete(requestId);
 
-        const from = await User.findById(request.from)
-            .select("_id displayname avatarUrl")
-            .lean();
+        io.to(request.from._id.toString()).emit("accept-request-friend", userId.toString(), { ...rest, message: rest.content })
 
         return res.status(200).json({
             message: "Chấp nhận lời mời kết bạn thành công",
             newFriend: {
-                _id: from?._id,
-                displayname: from?.displayname,
-                avatarUrl: from?.avatarUrl,
+                _id: request.from?._id,
+                displayname: request.from?.displayname,
+                avatarUrl: request.from?.avatarUrl,
             },
         });
     } catch (error) {
@@ -132,7 +160,7 @@ export const declineFriendRequest = async (req, res) => {
         }
 
         await FriendRequest.findByIdAndDelete(requestId);
-
+        // thông báo cho người gửi là từ chối kết bạn
         io.to(request.from._id.toString()).emit("decline-request-friend", userId.toString())
 
         return res.status(200).json({ requestFrom: { ...request.from, _id: request.from._id.toString() } });
@@ -184,7 +212,19 @@ export const getFriendRequests = async (req, res) => {
 
         const [sent, received] = await Promise.all([
             FriendRequest.find({ from: userId }).populate("to", populateFields), // populate để lấy thông tin chi tiết của người nhận lời mời kết bạn, nhưng chỉ lấy những trường cần thiết như _id, displayname, avatarUrl và username.
-            FriendRequest.find({ to: userId }).populate("from", populateFields),
+            FriendRequest.find({ to: userId })
+                .populate("from", populateFields).populate("notification_id", "content is_read")
+                .lean()
+                .then(requests => {
+                    return requests.map(r => {
+                        const { notification_id, ...rest } = r;
+                        return {
+                            ...rest,
+                            message: notification_id?.content,
+                            is_read: notification_id?.is_read,
+                        };
+                    })
+                })
         ]);
 
         // Lấy danh sách bạn bè hiện tại của userId
@@ -204,6 +244,7 @@ export const getFriendRequests = async (req, res) => {
 
         // Tạo Map để tra cứu nhanh
         const sentMap = new Map(); // key = to userId, value = true
+
         sent.forEach(req => sentMap.set(req.to._id.toString(), true));
 
         const receivedMap = new Map(); // key = from userId, value = true

@@ -11,6 +11,7 @@ import userRoute from "./routes/userRoute.js"
 import friendRoute from "./routes/friendRoute.js"
 import messageRoute from "./routes/messageRoutes.js"
 import conversationRoute from "./routes/conversationRoute.js"
+import notificationRoute from "./routes/notificationRoute.js"
 
 import { protectedRoute } from "./middlewares/authMiddleware.js"
 import { app, server } from "./socket/index.js"
@@ -43,6 +44,7 @@ app.use("/api/users", userRoute)
 app.use("/api/friends", friendRoute);
 app.use("/api/messages", messageRoute);
 app.use("/api/conversations", conversationRoute);
+app.use("/api/notifications", notificationRoute);
 
 connectDB().then(() => {
     server.listen(PORT, () => {

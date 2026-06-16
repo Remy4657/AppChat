@@ -22,10 +22,13 @@ import {
   BellIcon,
   UserIcon,
   LogOutIcon,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/useAuthStore";
 import ProfileDialog from "../profile/ProfileDialog";
+import { useThemeStore } from "@/stores/useThemeStore";
 
 export function NavUser({
   user,
@@ -39,6 +42,8 @@ export function NavUser({
 }) {
   const router = useRouter();
   const { signOut } = useAuthStore();
+  const { isDark, toggleTheme } = useThemeStore();
+
   const { isMobile } = useSidebar();
   const [friendRequestOpen, setfriendRequestOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -61,6 +66,7 @@ export function NavUser({
                   className="aria-expanded:bg-muted"
                 />
               }
+              className="cursor-pointer"
             >
               <Avatar>
                 <AvatarImage
@@ -106,10 +112,21 @@ export function NavUser({
                   <UserIcon className="text-muted-foreground dark:group-focus:!text-accent-foreground" />
                   Tài Khoản
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setfriendRequestOpen(true)}>
+                {/* <DropdownMenuItem onClick={() => setfriendRequestOpen(true)}>
                   <BellIcon className="text-muted-foreground dark:group-focus:!text-accent-foreground" />
                   Thông Báo
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
+                {isDark ? (
+                  <DropdownMenuItem onClick={() => toggleTheme()}>
+                    <Sun className="size-4 text-muted-foreground" />
+                    Chế độ sáng
+                  </DropdownMenuItem>
+                ) : (
+                  <DropdownMenuItem onClick={() => toggleTheme()}>
+                    <Moon className="size-4 text-muted-foreground" />
+                    Chế độ tối
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout}>

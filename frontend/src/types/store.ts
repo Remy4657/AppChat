@@ -95,6 +95,7 @@ export interface FriendState {
   receivedList: FriendRequest[];
   sentList: FriendRequest[];
   listAllUsers: Friend[];
+  resetReceivedList: () => void;
   searchByUsername: (username: string) => Promise<User | null>;
   addFriend: (to: string, message?: string) => Promise<string>;
   getAllFriendRequests: () => Promise<void>;
@@ -110,4 +111,7 @@ export interface SocketState {
 }
 export interface UserState {
   updateAvatarUrl: (formData: FormData) => Promise<void>;
+}
+export interface NotificationState {
+  markReadNotification: () => Promise<void>;
 }
