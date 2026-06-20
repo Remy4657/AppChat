@@ -4,6 +4,9 @@ import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useSocketStore } from "@/stores/useSocketStore";
+import { useSession } from "next-auth/react";
+import { useChatStore } from "@/stores/useChatStore";
+
 export default function RefreshTokenProvider({
   children,
 }: {
@@ -15,10 +18,17 @@ export default function RefreshTokenProvider({
   const { accessToken } = useAuthStore();
   const { connectSocket, disconnectSocket } = useSocketStore();
 
-  const [starting, setStarting] = useState(true);
   const refreshToken = useAuthStore((state) => state.refreshToken);
   const fetchMe = useAuthStore((state) => state.fetchMe);
   const hasInit = useRef(false); // dùng useRef để lưu trạng thái đã gọi refresh token hay chưa, nếu đã gọi rồi thì không gọi lại nữa để tránh bị lỗi vòng lặp vô hạn khi refresh token thất bại và bị chuyển hướng về trang đăng nhập liên tục
+
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    if (status === "authenticated" && session.user) {
+      useChatStore.getState().fetchConversations();
+    }
+  }, [status, session]);
 
   useEffect(() => {
     // chỉ gọi refresh token khi vào những trang cần auth như trang chủ, trang chat,... còn những trang như signin, signup thì không cần gọi refresh token vì khi vào những trang này thì chắc chắn là chưa có access token nên gọi refresh token sẽ bị lỗi vòng lặp vô hạn
@@ -28,14 +38,13 @@ export default function RefreshTokenProvider({
     if (hasInit.current) return;
 
     hasInit.current = true;
-
     const init = async () => {
       try {
+        console.log("refresh running...");
         await fetchMe();
       } catch (error) {
         router.push("/signin"); // chuyển hướng về trang đăng nhập nếu refresh token thất bại
       } finally {
-        setStarting(false);
       }
     };
     init();
@@ -47,9 +56,5 @@ export default function RefreshTokenProvider({
     }
     return () => disconnectSocket();
   }, [accessToken]);
-
-  // if (starting) {
-  //   return <div>Loading...</div>;
-  // }
   return children;
 }

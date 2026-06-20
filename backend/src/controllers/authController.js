@@ -84,11 +84,11 @@ export const logout = async (req, res) => {
     try {
         const refreshToken = req.cookies?.refreshToken;
 
-        if (!refreshToken) {
-            return res.status(400).json({
-                message: "Missing refresh token",
-            });
-        }
+        // if (!refreshToken) {
+        //     return res.status(400).json({
+        //         message: "Missing refresh token",
+        //     });
+        // }
 
         await authService.logoutUser(refreshToken);
 

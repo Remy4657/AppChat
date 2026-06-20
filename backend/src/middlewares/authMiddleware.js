@@ -5,9 +5,9 @@ export const protectedRoute = (req, res, next) => {
     try {
         //const accessToken = req.headers.authorization?.split(" ")[1];
         const accessToken = req.cookies.accessToken;
-        // if (!accessToken) {
-        //     return res.status(401).json({ message: "Không tìm thấy access token" });
-        // }
+        if (!accessToken) {
+            return res.status(401).json({ message: "Không tìm thấy access token" });
+        }
 
         jwt.verify(accessToken, process.env.JWT_SECRET, async (err, decodedUser) => {
             if (err) {

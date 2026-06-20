@@ -47,7 +47,7 @@ export function SigninForm() {
     }
   };
   const handleGoogleLogin = () => {
-    nextAuthSignin("google", { callbackUrl: "/" });
+    nextAuthSignin("google");
   };
 
   return (

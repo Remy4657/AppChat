@@ -113,9 +113,27 @@ export const useChatStore = create<ChatState>()(
           console.error("Lỗi xảy ra khi gửi direct message", error);
         }
       },
-      sendGroupMessage: async (conversationId, content, imgUrl) => {
+
+      sendDirectImageMessage: async (formData, recipientId) => {
         try {
-          await chatService.sendGroupMessage(conversationId, content, imgUrl);
+          const { activeConversationId } = get();
+          await chatService.sendDirectImageMessage(
+            formData,
+            recipientId,
+            activeConversationId!,
+          );
+          set((state) => ({
+            conversations: state.conversations.map((c) =>
+              c._id === activeConversationId ? { ...c, seenBy: [] } : c,
+            ),
+          }));
+        } catch (error) {
+          console.error("Lỗi khi send image message", error);
+        }
+      },
+      sendGroupMessage: async (conversationId, content) => {
+        try {
+          await chatService.sendGroupMessage(conversationId, content);
           // khi gửi tin nhắn mới thì sẽ reset seenBy của cuộc trò chuyện đó về rỗng để hiển thị trạng thái chưa xem cho những người tham gia khác, khi người dùng khác mở cuộc trò chuyện đó lên thì sẽ gọi API markAsSeen để cập nhật seenBy và hiển thị trạng thái đã xem ở giao diện
           set((state) => ({
             conversations: state.conversations.map((c) =>
@@ -124,6 +142,23 @@ export const useChatStore = create<ChatState>()(
           }));
         } catch (error) {
           console.error("Lỗi xảy ra gửi group message", error);
+        }
+      },
+      sendGroupImageMessage: async (formData, recipientId) => {
+        try {
+          const { activeConversationId } = get();
+          await chatService.sendGroupImageMessage(
+            formData,
+            recipientId,
+            activeConversationId!,
+          );
+          set((state) => ({
+            conversations: state.conversations.map((c) =>
+              c._id === activeConversationId ? { ...c, seenBy: [] } : c,
+            ),
+          }));
+        } catch (error) {
+          console.error("Lỗi khi send image message", error);
         }
       },
       // hàm addMessage này sẽ được gọi khi nhận được sự kiện "new-message" từ socket, message được truyền vào hàm này là message mới được gửi ra từ server, hàm này sẽ thêm message mới vào store để giao diện tự động cập nhật mà không cần phải fetch lại toàn bộ messages của cuộc trò chuyện đó, nếu message đã tồn tại trong store rồi thì sẽ không thêm nữa để tránh trùng lặp

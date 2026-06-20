@@ -20,16 +20,11 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Bell, Moon, Sun } from "lucide-react";
-import { Switch } from "../ui/switch";
 import ConversationSkeleton from "../skeleton/ConversationSkeleton";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { useThemeStore } from "@/stores/useThemeStore";
 import { useChatStore } from "@/stores/useChatStore";
-import AddFriendModal from "../chat/AddFriendModal";
 import NewGroupChatModal from "../chat/NewGroupChatModal";
 import UserListModal from "../newContact/UserListModal";
-import { Button } from "../ui/button";
-import { Dialog, DialogTrigger } from "../ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuGroup,

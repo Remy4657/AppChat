@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import type { AuthState } from "@/types/store";
 import { authService } from "@/services/authService";
 import { useChatStore } from "./useChatStore";
+import { signOut } from "next-auth/react";
 
 export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
   devtools((set, get) => ({
@@ -49,22 +50,12 @@ export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
         set({ loading: false });
       }
     },
-    signInGoogle: async (googleIdToken) => {
-      set({ loading: true });
-      try {
-        await authService.signInGoogle(googleIdToken);
-        await get().fetchMe();
-        useChatStore.getState().fetchConversations();
-      } catch (error) {
-        throw error; // để component biết đăng nhập thất bại, không throw new vì cần lấy lỗi từ response của server để hiển thị thông báo lỗi chính xác
-      } finally {
-        set({ loading: false });
-      }
-    },
+
     signOut: async () => {
       try {
         get().clearState(); // xóa state ngay lập tức để tránh trường hợp token cũ vẫn còn trong state khi signOut thất bại, tuy nhiên nếu signOut thất bại thì token cũng sẽ bị backend invalidate nên cũng không ảnh hưởng gì
-        // useChatStore.getState().reset();
+        useChatStore.getState().reset();
+        await signOut({ redirect: false });
         await authService.signOut();
       } catch (error) {
         throw error; // để component biết đăng nhập thất bại, không throw new vì đã có interceptor của axios handle rồi
@@ -89,7 +80,7 @@ export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
         // luôn fetch me sau khi refresh token để cập nhật thông tin user mới nhất vì khi refresh trang thì data lưu trong zudtand sẽ bị mất
         await fetchMe();
       } catch (error) {
-        get().signOut(); // xóa state và gọi api sign out để invalidate token ở backend nếu refresh token thất bại, tuy nhiên nếu refresh token thất bại thì token cũng sẽ bị backend invalidate nên cũng không ảnh hưởng gì
+        get().signOut(); // xóa state và gọi api sign out để invalidate token ở backend nếu refresh token thất bại
         toast.error("Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại: ");
         throw error; // để component biết refresh token thất bại
       } finally {

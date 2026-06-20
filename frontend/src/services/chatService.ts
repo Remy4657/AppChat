@@ -38,20 +38,60 @@ export const chatService = {
 
     return res.data.message;
   },
-
-  async sendGroupMessage(
+  async sendDirectImageMessage(
+    formData: FormData,
+    recipientId: string,
     conversationId: string,
-    content: string = "",
-    imgUrl?: string,
   ) {
+    formData.append("recipientId", recipientId);
+    formData.append("conversationId", conversationId);
+
+    const res = await api.post(
+      "/messages/direct-image",
+      formData,
+
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      },
+    );
+
+    if (res.status === 400) {
+      throw new Error(res.data.message);
+    }
+
+    return res.data;
+  },
+
+  async sendGroupMessage(conversationId: string, content: string = "") {
     const res = await api.post("/messages/group", {
       conversationId,
       content,
-      imgUrl,
     });
     return res.data.message;
   },
+  async sendGroupImageMessage(
+    formData: FormData,
+    recipientId: string,
+    conversationId: string,
+  ) {
+    formData.append("recipientId", recipientId);
+    formData.append("conversationId", conversationId);
 
+    const res = await api.post(
+      "/messages/group-image",
+      formData,
+
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      },
+    );
+
+    if (res.status === 400) {
+      throw new Error(res.data.message);
+    }
+
+    return res.data;
+  },
   async markAsSeen(conversationId: string) {
     const res = await api.patch(`/conversations/${conversationId}/seen`);
     return res.data;

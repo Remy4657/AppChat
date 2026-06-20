@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import { Card } from "../ui/card";
 import UserAvatar from "../chat/UserAvatar";
-import { useChatStore } from "@/stores/useChatStore";
 import { Button } from "../ui/button";
 import { useEffect } from "react";
 import { toast } from "sonner";
@@ -26,6 +25,7 @@ const UserListModal = (props: { isFirstCreateDirect: boolean }) => {
   const { listAllUsers, addFriend, declineRequest, acceptRequest } =
     useFriendStore();
   useEffect(() => {
+    console.log("friend request 1");
     useFriendStore.getState().getAllFriendRequests();
   }, []);
 

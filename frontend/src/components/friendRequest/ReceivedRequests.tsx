@@ -20,7 +20,7 @@ const ReceivedRequests = () => {
       await acceptRequest(requestId);
       toast.success("Đã đồng ý kết bạn thành công");
     } catch (error) {
-      console.error(error);
+      console.error("Lỗi khi đồng ý kết bạn: ", error);
     }
   };
 
@@ -29,7 +29,7 @@ const ReceivedRequests = () => {
       await declineRequest(requestId);
       toast.info("Đã từ chối kết bạn");
     } catch (error) {
-      console.error(error);
+      console.error("Lỗi khi từ chối kết bạn: ", error);
     }
   };
   return (

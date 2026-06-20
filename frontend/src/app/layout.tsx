@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import RefreshTokenProvider from "@/components/wrap/RefreshToken";
 import SetTheme from "@/components/wrap/SetTheme";
+import SessionProviders from "@/components/wrap/SessionProvider";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -31,10 +32,12 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <RefreshTokenProvider>
-          <SetTheme>{children}</SetTheme>
-        </RefreshTokenProvider>
-        <Toaster richColors position="top-right" />
+        <SessionProviders>
+          <RefreshTokenProvider>
+            <SetTheme>{children}</SetTheme>
+          </RefreshTokenProvider>
+          <Toaster richColors position="top-right" />
+        </SessionProviders>
       </body>
     </html>
   );

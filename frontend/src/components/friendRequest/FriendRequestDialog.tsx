@@ -22,7 +22,8 @@ const FriendRequestDialog = ({ open, setOpen }: FriendRequestDialogProps) => {
   useEffect(() => {
     const loadRequest = async () => {
       try {
-        await getAllFriendRequests();
+        console.log("friend request 2");
+        // await getAllFriendRequests();
       } catch (error) {
         console.error("Lỗi xảy ra khi load requests", error);
       }

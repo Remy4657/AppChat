@@ -5,6 +5,7 @@ import {
     updateConversationAfterCreateMessage,
 } from "../utils/messageHelper.js";
 import { io } from "../socket/index.js";
+import { uploadImageFromBuffer } from "../middlewares/uploadMiddleware.js";
 
 export const sendDirectMessage = async (req, res) => {
     try {
@@ -52,6 +53,59 @@ export const sendDirectMessage = async (req, res) => {
         return res.status(500).json({ message: "Lỗi hệ thống" });
     }
 };
+export const sendDirectImageMessage = async (req, res) => {
+    try {
+        const { recipientId, conversationId } = req.body;
+        const senderId = req.user._id
+        const file = req.file;
+
+        if (!file) {
+            return res.status(400).json({ message: "Vui lòng chọn ảnh để gửi" });
+        }
+
+        const result = await uploadImageFromBuffer(file.buffer); // Sử dụng hàm uploadImageFromBuffer để upload ảnh từ buffer
+
+        let conversation;
+
+        if (!result || !result.secure_url) {
+            return res.status(500).json({ message: "có lỗi xảy ra" });
+        }
+
+        if (conversationId) {
+            conversation = await Conversation.findById(conversationId);
+        }
+        if (!conversation) {
+            conversation = await Conversation.create({
+                type: "direct",
+                participants: [
+                    { userId: senderId, joinedAt: new Date() },
+                    { userId: recipientId, joinedAt: new Date() },
+                ],
+                lastMessageAt: new Date(),
+                unreadCounts: new Map(), // khởi tạo unreadCounts là một Map rỗng, sẽ được cập nhật sau khi tạo tin nhắn đầu tiên
+            });
+        }
+
+        const message = await Message.create({
+            conversationId: conversation._id,
+            senderId,
+            content: '',  // text có thể rỗng
+            imgUrl: result.secure_url,
+            deleted_at: null,
+            deleted_by: null
+        });
+        // để đảm bảo tính nhất quán, sau khi tạo tin nhắn mới, sẽ cập nhật lại thông tin của conversation như lastMessage, lastMessageAt và seenBy, đồng thời tăng số lượng tin nhắn chưa đọc cho tất cả người tham gia trừ người gửi. Sau đó lưu lại conversation để cập nhật vào cơ sở dữ liệu
+        updateConversationAfterCreateMessage(conversation, message, senderId);
+        await conversation.save();
+        // sau khi đã cập nhật xong conversation, sẽ phát sự kiện "newMessage" qua socket.io để thông báo cho tất cả người tham gia trong conversation về tin nhắn mới vừa được tạo
+        emitNewMessage(io, conversation, message);
+
+        return res.status(201).json({ message });
+    } catch (error) {
+        console.error("Lỗi xảy ra khi upload avatar", error);
+        return res.status(500).json({ message: "Upload failed" });
+    }
+};
 
 export const sendGroupMessage = async (req, res) => {
     try {
@@ -83,6 +137,40 @@ export const sendGroupMessage = async (req, res) => {
         return res.status(500).json({ message: "Lỗi hệ thống" });
     }
 };
+export const sendGroupImageMessage = async (req, res) => {
+    try {
+        const { conversationId } = req.body;
+        const senderId = req.user._id;
+        const conversation = req.conversation;
+
+        const file = req.file;
+
+        if (!file) {
+            return res.status(400).json({ message: "Vui lòng chọn ảnh để gửi" });
+        }
+
+        const result = await uploadImageFromBuffer(file.buffer);
+
+        const message = await Message.create({
+            conversationId,
+            senderId,
+            content: '',
+            imgUrl: result.secure_url,
+            deleted_at: null,
+            deleted_by: null
+        });
+
+        updateConversationAfterCreateMessage(conversation, message, senderId);
+
+        await conversation.save();
+        emitNewMessage(io, conversation, message); // sau khi đã cập nhật xong conversation, sẽ phát sự kiện "newMessage" qua socket.io để thông báo cho tất cả người tham gia trong conversation về tin nhắn mới vừa được tạo
+
+        return res.status(201).json({ message });
+    } catch {
+        console.error("Lỗi xảy ra khi gửi tin nhắn nhóm", error);
+        return res.status(500).json({ message: "Lỗi hệ thống" });
+    }
+}
 export const retrieveMessage = async (req, res) => {
     try {
         const messageId = req.body.messageId
@@ -133,7 +221,6 @@ export const retrieveMessage = async (req, res) => {
 
         return res.status(200).json({ message: "Thu hồi tin nhắn thành công" })
     } catch (error) {
-        console.log("error: ", error)
         return res.status(500).json({ message: "Lỗi hệ thống" });
 
     }

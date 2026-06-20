@@ -17,7 +17,7 @@ export const markReadNotification = async (req, res) => {
             matchedCount: result.matchedCount      // số lượng thông báo thỏa điều kiện
         });
     } catch (error) {
-        console.error(error);
+        console.log("Lỗi xảy ra: ", error)
         res.status(500).json({ message: 'Lỗi server' });
     }
 }

@@ -40,7 +40,6 @@ export const authOptions: NextAuthOptions = {
             maxAge: 14 * 24 * 60 * 60, // 14 days
           });
         }
-        useAuthStore.getState().signInGoogle(googleIdToken!);
       }
 
       return token;

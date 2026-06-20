@@ -1,6 +1,6 @@
 import { useAuthStore } from "@/stores/useAuthStore";
 import type { Conversation } from "@/types/chat";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "../ui/button";
 import { ImagePlus, Send } from "lucide-react";
 import { Input } from "../ui/input";
@@ -11,6 +11,9 @@ import { toast } from "sonner";
 const MessageInput = ({ selectedConvo }: { selectedConvo: Conversation }) => {
   const { user } = useAuthStore();
   const { sendDirectMessage, sendGroupMessage } = useChatStore();
+  const { sendDirectImageMessage, sendGroupImageMessage } = useChatStore();
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [value, setValue] = useState("");
 
   if (!user) return;
@@ -29,7 +32,6 @@ const MessageInput = ({ selectedConvo }: { selectedConvo: Conversation }) => {
         await sendGroupMessage(selectedConvo._id, currValue);
       }
     } catch (error) {
-      console.error(error);
       toast.error("Lỗi xảy ra khi gửi tin nhắn. Bạn hãy thử lại!");
     }
   };
@@ -40,10 +42,37 @@ const MessageInput = ({ selectedConvo }: { selectedConvo: Conversation }) => {
       sendMessage();
     }
   };
+  const handleClick = () => {
+    fileInputRef.current?.click();
+  };
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      const file = e.target.files?.[0];
+      if (!file) {
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const participants = selectedConvo.participants;
+      const otherUser = participants.filter((p) => p._id !== user._id)[0];
+      const recipientId = otherUser._id;
+      if (selectedConvo.type === "direct") {
+        await sendDirectImageMessage(formData, recipientId);
+      } else {
+        // send imageMessage group
+        await sendGroupImageMessage(formData, recipientId);
+      }
+    } catch (error) {
+      toast.error("Lỗi xảy ra khi gửi tin nhắn. Bạn hãy thử lại!");
+    }
+  };
 
   return (
     <div className="flex items-center gap-2 p-3 min-h-[56px] bg-background">
       <Button
+        onClick={handleClick}
         variant="ghost"
         size="icon"
         className="hover:bg-primary/10 transition-smooth"
@@ -55,10 +84,14 @@ const MessageInput = ({ selectedConvo }: { selectedConvo: Conversation }) => {
         <Input
           onKeyPress={handleKeyPress}
           value={value}
-          onChange={(e) => setValue(e.target.value)}
+          onChange={(e) => {
+            setValue(e.target.value);
+          }}
           placeholder="Soạn tin nhắn..."
           className="pr-20 h-9 bg-white border-border/50 focus:border-primary/50 transition-smooth resize-none"
         ></Input>
+        <input type="file" hidden ref={fileInputRef} onChange={handleUpload} />
+
         <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
           <div>
             <EmojiPicker

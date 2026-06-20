@@ -9,7 +9,7 @@ const Logout = () => {
       await signOut();
       // navigate("/signin");
     } catch (error) {
-      console.error(error);
+      console.error("err logout: ", error);
     }
   };
 

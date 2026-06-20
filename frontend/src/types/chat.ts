@@ -51,7 +51,7 @@ export interface Message {
   _id: string;
   conversationId: string;
   senderId: string;
-  content: string | null;
+  content?: string | null;
   imgUrl?: string | null;
   deleted_at?: string | null;
   deleted_by?: string | null;

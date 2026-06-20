@@ -18,7 +18,6 @@ export interface AuthState {
     password: string,
   ) => Promise<void>;
   signIn: (username: string, password: string) => Promise<void>;
-  signInGoogle: (googleIdToken: string) => Promise<void>;
   signOut: () => Promise<void>;
   fetchMe: () => Promise<void>;
   refreshToken: () => Promise<void>;
@@ -64,6 +63,17 @@ export interface ChatState {
     content: string,
     imgUrl?: string,
   ) => Promise<void>;
+
+  sendDirectImageMessage: (
+    formData: FormData,
+    recipientId: string,
+  ) => Promise<void>;
+
+  sendGroupImageMessage: (
+    formData: FormData,
+    recipientId: string,
+  ) => Promise<void>;
+
   sendGroupMessage: (
     conversationId: string,
     content: string,
