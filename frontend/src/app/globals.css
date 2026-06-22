@@ -300,13 +300,26 @@
   }
 
   /* Pulse ring for unread messages */
-  .pulse-ring {
+  /* .pulse-ring {
     @apply relative;
   }
 
   .pulse-ring::before {
     content: "";
     @apply absolute inset-0 rounded-full bg-primary/30 animate-ping duration-[2000ms];
+  } */
+  @keyframes bounce {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  .pulse-ring {
+    animation: bounce 1s infinite ease-in-out;
   }
 
   /* Message bounce in animation */

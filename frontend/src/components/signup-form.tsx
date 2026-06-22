@@ -61,7 +61,12 @@ export function SignupForm({
               {/* header - logo */}
               <div className="flex flex-col items-center text-center gap-2">
                 <Link href="/" className="mx-auto block w-fit text-center">
-                  <Image src="/logo.png" alt="logo" width={60} height={60} />
+                  <Image
+                    src="/message-icon.png"
+                    alt="logo"
+                    width={60}
+                    height={60}
+                  />
                 </Link>
 
                 <h1 className="text-2xl font-bold">Tạo tài khoản QuickChat</h1>

@@ -60,7 +60,7 @@ export function SigninForm() {
               <div className="flex flex-col items-center text-center gap-2">
                 <Link href="/" className="mx-auto block w-fit text-center">
                   <Image
-                    src="/logo.png"
+                    src="/message-icon.png"
                     alt="logo"
                     width={60}
                     height={60}

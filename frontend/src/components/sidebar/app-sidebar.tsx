@@ -57,16 +57,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton variant="default" size="lg" className="">
+              <SidebarMenuButton
+                variant="default"
+                size="lg"
+                className="hover:bg-background"
+              >
                 <div className="flex w-full items-center px-2 justify-between">
                   <h1 className="text-xl font-bold">QuickChat</h1>
                   <DropdownMenu>
                     <DropdownMenuGroup>
                       <DropdownMenuItem onClick={() => handleClickBell()}>
-                        <Bell
-                          size={12}
-                          className="dark:group-focus:!text-accent-foreground"
-                        />
+                        <Bell size={16} />
                         <UnreadCountBadge
                           unreadCount={receivedListUnread.length}
                         />

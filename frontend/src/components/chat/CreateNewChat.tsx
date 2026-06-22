@@ -1,7 +1,7 @@
 import { useFriendStore } from "@/stores/useFriendStore";
 import { Card } from "../ui/card";
 import { Dialog, DialogTrigger } from "../ui/dialog";
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, Search, Plus } from "lucide-react";
 import FriendListModal from "../createNewChat/FriendListModal";
 
 const CreateNewChat = () => {
@@ -19,13 +19,19 @@ const CreateNewChat = () => {
       >
         <Dialog>
           <DialogTrigger>
-            <div className="flex items-center gap-2 cursor-pointer">
-              <div className="size-5 rounded-full flex items-center justify-center group-hover/card:scale-110 transition-bounce">
-                <MessageCircle className="size-4 " />
+            <div className="flex items-center gap-2 cursor-pointer justify-between">
+              <div className="flex flex-row gap-2">
+                <div className="size-5 rounded-full flex items-center justify-center group-hover/card:scale-110 transition-bounce">
+                  <Search className="size-4 " />
+                </div>
+                <span className="text-sm font-medium capitalize">
+                  Tin nhắn mới
+                </span>
               </div>
-              <span className="text-sm font-medium capitalize">
-                Tin nhắn mới
-              </span>
+
+              <div className="size-5 rounded-full flex items-center justify-center group-hover/card:scale-110 transition-bounce">
+                <Plus className="size-4" />
+              </div>
             </div>
           </DialogTrigger>
 
