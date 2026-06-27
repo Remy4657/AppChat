@@ -9,23 +9,21 @@ import Session from "../models/Session.js";
 const ACCESS_TOKEN_TTL = "1d"; // thuờng là dưới 15m
 const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000; // 14 ngày
 
-export const registerUser = async (data) => {
-
-    const { username, email, firstname, lastname } = data;
-    // check duplicate
+export const checkEmailExist = async (email) => {
     const existingUser = await User.findOne({
-        $or: [{ username }, { email }],
+        email
     });
 
     if (existingUser) {
-        throw new Error("Username or email already exists");
+        throw new Error("Email đã được sử dụng");
     }
-
+}
+export const registerUser = async (data) => {
+    const { username, email, firstname, lastname } = data;
     // create user (password sẽ được hash trong schema)
     const user = await User.create({ ...data, displayname: `${lastname} ${firstname}` });
-
-    // không trả password về client
     user.password = undefined;
+
 
     return user;
 };
@@ -39,7 +37,12 @@ export const loginUser = async (data) => {
     }
 
     // find user by username
-    const user = await User.findOne({ username });
+    const user = await User.findOne({
+        $or: [
+            { username: username },
+            { email: username }
+        ]
+    });
 
     if (!user) {
         throw new Error("Invalid username or password");
@@ -77,7 +80,7 @@ export const loginGoogleUser = async (googleIdToken) => {
 
     const ticket = await googleClient.verifyIdToken({
         idToken: googleIdToken,
-        audience: process.env.GOOGLE_CLIENT_ID,  // đảm bảo token được cấp 
+        audience: process.env.GOOGLE_CLIENT_ID,  // đảm bảo token được cấp
     });
     const payload = ticket.getPayload();
     if (!payload) {
@@ -88,7 +91,7 @@ export const loginGoogleUser = async (googleIdToken) => {
     // Tìm hoặc tạo user
     const user = await findOrCreateUser({ googleId, email, name, picture });
 
-    // Tạo access token 
+    // Tạo access token
     const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
         expiresIn: ACCESS_TOKEN_TTL,
     });

@@ -16,7 +16,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import FriendRequestDialog from "@/components/friendRequest/FriendRequestDialog";
 import {
   ChevronsUpDownIcon,
   BellIcon,
@@ -137,10 +136,7 @@ export function NavUser({
           </DropdownMenu>
         </SidebarMenuItem>
       </SidebarMenu>
-      <FriendRequestDialog
-        open={friendRequestOpen}
-        setOpen={setfriendRequestOpen}
-      />
+
       <ProfileDialog open={profileOpen} setOpen={setProfileOpen} />
     </>
   );

@@ -24,10 +24,6 @@ const UserListModal = (props: { isFirstCreateDirect: boolean }) => {
   const { isFirstCreateDirect } = props;
   const { listAllUsers, addFriend, declineRequest, acceptRequest } =
     useFriendStore();
-  useEffect(() => {
-    console.log("friend request 1");
-    useFriendStore.getState().getAllFriendRequests();
-  }, []);
 
   const handleSend = async (userId: string) => {
     try {

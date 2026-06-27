@@ -7,8 +7,27 @@ export const authService = {
     username: string,
     email: string,
     password: string,
+    otp: string,
   ) => {
     const res = await api.post("/auth/signup", {
+      firstname,
+      lastname,
+      username,
+      email,
+      password,
+      otp,
+    });
+
+    return res?.data;
+  },
+  sendOtp: async (
+    firstname: string,
+    lastname: string,
+    username: string,
+    email: string,
+    password: string,
+  ) => {
+    const res = await api.post("/otp/generate", {
       firstname,
       lastname,
       username,

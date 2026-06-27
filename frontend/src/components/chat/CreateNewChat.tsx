@@ -21,7 +21,7 @@ const CreateNewChat = () => {
           <DialogTrigger>
             <div className="flex items-center gap-2 cursor-pointer justify-between">
               <div className="flex flex-row gap-2">
-                <div className="size-5 rounded-full flex items-center justify-center group-hover/card:scale-110 transition-bounce">
+                <div className="size-5 flex items-center justify-center group-hover/card:scale-110 transition-bounce">
                   <Search className="size-4 " />
                 </div>
                 <span className="text-sm font-medium capitalize">

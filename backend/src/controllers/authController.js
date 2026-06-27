@@ -1,18 +1,27 @@
+import { redisClient } from "../libs/connectRedisDb.js";
 import * as authService from "../services/authService.js";
+import { generateOTP } from "./otpController.js";
 
 const ACCESS_TOKEN_TTL = 24 * 60 * 60 * 1000; // 1 giờ
 const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000; // 14 ngày
 
+
 export const register = async (req, res) => {
     try {
-        const { username, password, email, firstname, lastname } = req.body;
-        // validate basic
-        if (!username || !password || !email) {
+        const { username, password, email, firstname, lastname, otp } = req.body;
+        if (!otp) {
             return res.status(400).json({
-                message: "Missing required fields",
+                message: "OTP is a required fields",
             });
         }
 
+        const storedOTP = await redisClient.get(`otp:${email}`);
+        if (!storedOTP) {
+            return res.status(400).json({ success: false, message: 'OTP không tồn tại hoặc đã hết hạn.' });
+        }
+        if (storedOTP !== otp) {
+            return res.status(400).json({ success: false, message: 'Mã OTP không chính xác.' });
+        }
         const user = await authService.registerUser({
             username,
             password,
@@ -20,6 +29,7 @@ export const register = async (req, res) => {
             firstname,
             lastname,
         });
+        await redisClient.del(`otp:${email}`);
 
         return res.status(201).json({
             message: "Register successful",
@@ -27,8 +37,9 @@ export const register = async (req, res) => {
         });
 
     } catch (error) {
+        console.log(error)
         return res.status(400).json({
-            message: `Lỗi khi đăng ký: ${error.message}`,
+            message: error.message,
         });
     }
 };
@@ -83,12 +94,6 @@ export const loginGoogle = async (req, res) => {
 export const logout = async (req, res) => {
     try {
         const refreshToken = req.cookies?.refreshToken;
-
-        // if (!refreshToken) {
-        //     return res.status(400).json({
-        //         message: "Missing refresh token",
-        //     });
-        // }
 
         await authService.logoutUser(refreshToken);
 

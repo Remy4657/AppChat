@@ -113,7 +113,11 @@ export function SigninForm() {
               <Button type="submit" className="w-full" disabled={isSubmitting}>
                 Đăng nhập
               </Button>
-              <span className="text-center text-sm">or</span>
+              <div className="flex items-center my-3 m-auto">
+                <div className="border-t border-gray-300 w-20"></div>
+                <span className="px-4 text-gray-500">or</span>
+                <div className="border-t border-gray-300 w-20"></div>
+              </div>
               <Button
                 type="button"
                 variant="outline"
@@ -125,7 +129,7 @@ export function SigninForm() {
                   src="/google.png"
                   alt="google"
                   className="pr-1"
-                  width={20}
+                  width={27}
                   height={20}
                 />
                 Đăng nhập với Google
@@ -149,10 +153,6 @@ export function SigninForm() {
           </div>
         </CardContent>
       </Card>
-      <div className=" text-xs text-balance px-6 text-center *:[a]:hover:text-primary text-muted-foreground *:[a]:underline *:[a]:underline-offetset-4">
-        Bằng cách tiếp tục, bạn đồng ý với <a href="#">Điều khoản dịch vụ</a> và{" "}
-        <a href="#">Chính sách bảo mật</a> của chúng tôi.
-      </div>
     </div>
   );
 }

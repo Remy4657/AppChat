@@ -36,7 +36,6 @@ const PersonalInfoForm = ({ userInfo }: Props) => {
     <Card className="glass-strong border-border/30">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Heart className="size-5 text-primary" />
           Thông tin cá nhân
         </CardTitle>
         <CardDescription>

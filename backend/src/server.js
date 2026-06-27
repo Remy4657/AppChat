@@ -5,13 +5,16 @@ import cors from "cors"
 import swaggerUi from "swagger-ui-express";
 import fs from "fs";
 import { v2 as cloudinary } from "cloudinary";
-import connectDB from "./libs/db.js"
+import connectMongo from "./libs/connectMongoDb.js"
+import { connectRedis } from "./libs/connectRedisDb.js"
+
 import authRoute from "./routes/authRoutes.js"
 import userRoute from "./routes/userRoute.js"
 import friendRoute from "./routes/friendRoute.js"
 import messageRoute from "./routes/messageRoutes.js"
 import conversationRoute from "./routes/conversationRoute.js"
 import notificationRoute from "./routes/notificationRoute.js"
+import otpRoute from "./routes/otpRoutes.js"
 
 import { protectedRoute } from "./middlewares/authMiddleware.js"
 import { app, server } from "./socket/index.js"
@@ -37,6 +40,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 //public route
 app.use("/api/auth", authRoute)
+app.use("/api/otp", otpRoute)
 
 //private route
 app.use(protectedRoute)
@@ -46,8 +50,20 @@ app.use("/api/messages", messageRoute);
 app.use("/api/conversations", conversationRoute);
 app.use("/api/notifications", notificationRoute);
 
-connectDB().then(() => {
-    server.listen(PORT, () => {
-        console.log(`server started at port ${PORT}`)
-    })
-})
+(async () => {
+    try {
+        await Promise.all([
+            connectRedis(),
+            connectMongo()
+        ]);
+
+        server.listen(PORT, () => {
+            console.log(`server started at port ${PORT}`);
+        });
+    } catch (err) {
+        console.error("Lỗi khi khởi động ứng dụng:", err);
+        process.exit(1);
+    }
+})();
+
+

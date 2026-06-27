@@ -6,9 +6,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useFriendStore } from "@/stores/useFriendStore";
 import SentRequests from "./SentRequest";
 import ReceivedRequests from "./ReceivedRequests";
+import { useFriendStore } from "@/stores/useFriendStore";
 
 interface FriendRequestDialogProps {
   open: boolean;
@@ -17,13 +17,11 @@ interface FriendRequestDialogProps {
 
 const FriendRequestDialog = ({ open, setOpen }: FriendRequestDialogProps) => {
   const [tab, setTab] = useState("received");
-  const { getAllFriendRequests } = useFriendStore();
 
   useEffect(() => {
     const loadRequest = async () => {
       try {
-        console.log("friend request 2");
-        // await getAllFriendRequests();
+        useFriendStore.getState().getAllFriendRequests();
       } catch (error) {
         console.error("Lỗi xảy ra khi load requests", error);
       }

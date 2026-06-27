@@ -16,11 +16,19 @@ export interface AuthState {
     username: string,
     email: string,
     password: string,
+    otp: string,
   ) => Promise<void>;
   signIn: (username: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   fetchMe: () => Promise<void>;
   refreshToken: () => Promise<void>;
+  sendOtp: (
+    firstname: string,
+    lastname: string,
+    username: string,
+    email: string,
+    password: string,
+  ) => Promise<{ expiresAt: string }>;
 }
 export interface ThemeState {
   isDark: boolean;
@@ -40,12 +48,12 @@ export interface ChatState {
   //data trả ra có dạng:
   /*
   {
-    conversationId: 
-      { 
-        items: Message[], 
-        hasMore: boolean, 
-        nextCursor?: string 
-      } 
+    conversationId:
+      {
+        items: Message[],
+        hasMore: boolean,
+        nextCursor?: string
+      }
   }
   */
 

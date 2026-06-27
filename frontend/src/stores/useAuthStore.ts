@@ -16,7 +16,7 @@ export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
     setUser: (user) => {
       set({ user });
     },
-    signUp: async (firstname, lastname, username, email, password) => {
+    signUp: async (firstname, lastname, username, email, password, otp) => {
       set({ loading: true });
       try {
         await authService.signUp(
@@ -25,14 +25,14 @@ export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
           username,
           email,
           password,
+          otp,
         );
-        toast.success("Đăng ký thành công!");
       } catch (error: any) {
-        // toast.error("Đăng ký thất bại. Vui lòng thử lại."); // đã thông báo ở axuios interceptor nên không cần thông báo ở đây nữa để tránh bị trùng lặp thông báo lỗi
+        // toast.error("Đăng ký thất bại. Vui lòng thử lại."); // đã thông báo ở axuios interceptor
         throw new Error(
           error?.response?.data?.message ||
             "Lỗi xảy ra khi đăng ký. Hãy thử lại",
-        ); // để component biết đăng ký thất bại, không throw new vì đã có interceptor của axios handle rồi
+        );
       } finally {
         set({ loading: false });
       }
@@ -83,6 +83,27 @@ export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
         get().signOut(); // xóa state và gọi api sign out để invalidate token ở backend nếu refresh token thất bại
         toast.error("Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại: ");
         throw error; // để component biết refresh token thất bại
+      } finally {
+        set({ loading: false });
+      }
+    },
+    sendOtp: async (firstname, lastname, username, email, password) => {
+      set({ loading: true });
+      try {
+        const res = await authService.sendOtp(
+          firstname,
+          lastname,
+          username,
+          email,
+          password,
+        );
+        return res;
+      } catch (error: any) {
+        // toast.error("Đăng ký thất bại. Vui lòng thử lại."); // đã thông báo ở axuios interceptor
+        throw new Error(
+          error?.response?.data?.message ||
+            "Lỗi xảy ra khi đăng ký. Hãy thử lại",
+        );
       } finally {
         set({ loading: false });
       }

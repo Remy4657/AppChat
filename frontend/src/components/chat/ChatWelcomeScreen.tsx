@@ -9,7 +9,6 @@ const ChatWelcomeScreen = () => {
       <div className="flex bg-primary-foreground rounded-2xl flex-1 items-center justify-center">
         <div className="text-center">
           <div className="mx-auto mb-6 flex items-center justify-center shadow-glow pulse-ring">
-            {/* <span className="text-3xl">💬</span> */}
             <Image
               src="/message-icon.png"
               width={160}
