@@ -49,6 +49,7 @@ const PersonalInfoForm = ({ userInfo }: Props) => {
             <div key={key} className="space-y-2">
               <Label htmlFor={key}>{label}</Label>
               <Input
+                disabled
                 id={key}
                 type={type ?? "text"}
                 value={userInfo[key] ?? ""}
@@ -62,6 +63,7 @@ const PersonalInfoForm = ({ userInfo }: Props) => {
         <div className="space-y-2">
           <Label htmlFor="bio">Giới thiệu</Label>
           <Textarea
+            disabled
             id="bio"
             rows={3}
             value={userInfo.bio ?? ""}
@@ -70,9 +72,9 @@ const PersonalInfoForm = ({ userInfo }: Props) => {
           />
         </div>
 
-        <Button className="w-full md:w-auto bg-gradient-primary hover:opacity-90 transition-opacity">
+        {/* <Button className="w-full md:w-auto bg-gradient-primary hover:opacity-90 transition-opacity">
           Lưu thay đổi
-        </Button>
+        </Button> */}
       </CardContent>
     </Card>
   );

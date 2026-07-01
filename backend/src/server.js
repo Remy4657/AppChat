@@ -43,13 +43,28 @@ app.use("/api/auth", authRoute)
 app.use("/api/otp", otpRoute)
 
 //private route
-app.use(protectedRoute)
-app.use("/api/users", userRoute)
-app.use("/api/friends", friendRoute);
-app.use("/api/messages", messageRoute);
-app.use("/api/conversations", conversationRoute);
-app.use("/api/notifications", notificationRoute);
+//app.use(protectedRoute)
+app.use("/api/users", protectedRoute, userRoute)
+app.use("/api/friends", protectedRoute, friendRoute);
+app.use("/api/messages", protectedRoute, messageRoute);
+app.use("/api/conversations", protectedRoute, conversationRoute);
+app.use("/api/notifications", protectedRoute, notificationRoute);
 
+// handling error
+app.use((req, res, next) => {
+    const error = new Error('Not Found');
+    error.status = 404;
+    next(error);
+});
+app.use((error, req, res, next) => {
+    const statusCode = error.status || 500;
+
+    return res.status(statusCode).json({
+        status: 'error',
+        code: statusCode,
+        message: error.message || 'Internal Server Error',
+    });
+});
 (async () => {
     try {
         await Promise.all([

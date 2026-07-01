@@ -41,7 +41,6 @@ export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
       set({ loading: true });
       try {
         await authService.signIn(username, password);
-        // get().setAccessToken(accessToken);
         await get().fetchMe();
         useChatStore.getState().fetchConversations();
       } catch (error) {

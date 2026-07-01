@@ -1,5 +1,6 @@
 import express from "express";
 import { register, login, loginGoogle, logout, refreshToken } from "../controllers/authController.js";
+import { asyncHandler } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 

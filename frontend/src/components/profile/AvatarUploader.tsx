@@ -32,7 +32,7 @@ const AvatarUploader = () => {
         onClick={handleClick}
         className="absolute -bottom-2 -right-2 size-9 rounded-full shadow-md hover:scale-115 transition duration-300 hover:bg-background"
       >
-        <Camera className="size-4" />
+        <Camera className="size-4 text-neutral-600" />
       </Button>
 
       <input type="file" hidden ref={fileInputRef} onChange={handleUpload} />

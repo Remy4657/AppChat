@@ -1,0 +1,18 @@
+# POST http://localhost:5001/api/otp/generatee HTTP/1.1
+# content-type: application/json
+
+# {
+# "email": "trongdatnguyen.0801@gmail.com",
+# "firstname": "4657",
+# "lastname": "Remy",
+# "password": "111111",
+# "username": "dsds"
+# }
+
+POST http://localhost:5001/api/auth/signin HTTP/1.1
+content-type: application/json
+
+{
+    "username": "remy3",
+    "password": "123456"
+}

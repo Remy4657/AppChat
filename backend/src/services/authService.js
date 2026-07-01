@@ -5,6 +5,7 @@ import { OAuth2Client } from "google-auth-library";
 
 import User from "../models/User.js";
 import Session from "../models/Session.js";
+import { ConflictRequestError, UnauthorizedError } from "../core/error.response.js";
 
 const ACCESS_TOKEN_TTL = "1d"; // thuờng là dưới 15m
 const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000; // 14 ngày
@@ -13,30 +14,22 @@ export const checkEmailExist = async (email) => {
     const existingUser = await User.findOne({
         email
     });
-
     if (existingUser) {
-        throw new Error("Email đã được sử dụng");
+        throw new ConflictRequestError("Email đã được sử dụng");
     }
 }
 export const registerUser = async (data) => {
     const { username, email, firstname, lastname } = data;
+
     // create user (password sẽ được hash trong schema)
     const user = await User.create({ ...data, displayname: `${lastname} ${firstname}` });
     user.password = undefined;
 
-
     return user;
 };
 export const loginUser = async (data) => {
-
     const { username, password } = data;
 
-    // check required fields
-    if (!username || !password) {
-        throw new Error("Missing username or password");
-    }
-
-    // find user by username
     const user = await User.findOne({
         $or: [
             { username: username },
@@ -45,14 +38,13 @@ export const loginUser = async (data) => {
     });
 
     if (!user) {
-        throw new Error("Invalid username or password");
+        throw new UnauthorizedError("Tên đăng nhập hoặc mật khẩu không đúng")
     }
-
-    // check password
     const isMatch = await bycrypt.compare(password, user.password);
 
     if (!isMatch) {
-        throw new Error("Invalid username or password");
+        throw new UnauthorizedError("Tên đăng nhập hoặc mật khẩu không đúng")
+
     }
     const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
         expiresIn: ACCESS_TOKEN_TTL,
@@ -84,7 +76,8 @@ export const loginGoogleUser = async (googleIdToken) => {
     });
     const payload = ticket.getPayload();
     if (!payload) {
-        throw new Error("Invalid Google token")
+        throw new UnauthorizedError("Invalid Google token")
+        //throw new Error("Invalid Google token")
     }
     const { sub: googleId, email, name, given_name, picture } = payload;
 
@@ -114,12 +107,13 @@ export const logoutUser = async (refreshToken) => {
 
 export const refreshToken = async (refreshToken) => {
     if (!refreshToken) {
-        throw new Error("Token không tồn tại");
+        throw new UnauthorizedError("Token không tồn tại")
+
     }
     const session = await Session.findOne({ refreshToken });
 
     if (!session || session.expiresAt < new Date()) {
-        throw new Error("Token không hợp lệ hoặc đã hết hạn");
+        throw new UnauthorizedError("Token không hợp lệ hoặc đã hết hạn")
     }
 
     const newAccessToken = jwt.sign({ userId: session.userId }, process.env.JWT_SECRET, {
