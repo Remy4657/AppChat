@@ -14,7 +14,7 @@ export const sendDirectMessage = async (req, res) => {
     // sau khi đã cập nhật xong conversation, sẽ phát sự kiện "newMessage" qua socket.io để thông báo cho tất cả người tham gia trong conversation về tin nhắn mới vừa được tạo
     emitNewMessage(io, conversation, message);
 
-    SuccessResponse.created(res, null, null, { message });
+    SuccessResponse.created(res, null, null);
 
 };
 export const sendDirectImageMessage = async (req, res) => {
@@ -31,7 +31,7 @@ export const sendDirectImageMessage = async (req, res) => {
     // sau khi đã cập nhật xong conversation, sẽ phát sự kiện "newMessage" qua socket.io để thông báo cho tất cả người tham gia trong conversation về tin nhắn mới vừa được tạo
     emitNewMessage(io, conversation, message);
 
-    SuccessResponse.created(res, null, null, { message });
+    SuccessResponse.created(res, null, null);
 
 };
 
@@ -49,7 +49,7 @@ export const sendGroupMessage = async (req, res) => {
 
     emitNewMessage(io, conversation, message); // sau khi đã cập nhật xong conversation, sẽ phát sự kiện "newMessage" qua socket.io để thông báo cho tất cả người tham gia trong conversation về tin nhắn mới vừa được tạo
 
-    SuccessResponse.created(res, null, null, { message });
+    SuccessResponse.created(res, null, null);
 
 };
 export const sendGroupImageMessage = async (req, res) => {
@@ -66,7 +66,7 @@ export const sendGroupImageMessage = async (req, res) => {
     const { message } = await messageService.sendGroupImageMessage({ conversationId, senderId, conversation, file });
     emitNewMessage(io, conversation, message); // sau khi đã cập nhật xong conversation, sẽ phát sự kiện "newMessage" qua socket.io để thông báo cho tất cả người tham gia trong conversation về tin nhắn mới vừa được tạo
 
-    SuccessResponse.created(res, null, null, { message });
+    SuccessResponse.created(res, null, null);
 
 }
 export const retrieveMessage = async (req, res) => {

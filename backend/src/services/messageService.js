@@ -95,7 +95,7 @@ export const sendGroupMessage = async (data) => {
     updateConversationAfterCreateMessage(conversation, message, senderId);
 
     await conversation.save();
-    return { message, conversation };
+    return { message: message.toObject(), conversation };
 }
 export const sendGroupImageMessage = async (data) => {
     const { conversationId, senderId, conversation, file } = data;
