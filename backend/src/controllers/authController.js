@@ -40,13 +40,13 @@ export const login = async (req, res) => {
     res.cookie("accessToken", accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "Strict",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
         maxAge: ACCESS_TOKEN_TTL,
     });
     res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "Strict",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
         maxAge: REFRESH_TOKEN_TTL, // 7 ngày
     });
     SuccessResponse.ok(res, null, 'Đăng nhập thành công', { accessToken });
@@ -72,12 +72,13 @@ export const logout = async (req, res) => {
     res.clearCookie("refreshToken", {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "Strict",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
     });
     res.clearCookie("accessToken", {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "Strict",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+
     });
     SuccessResponse.ok(res, null, 'Đăng xuất thành công');
 }
@@ -89,7 +90,7 @@ export const refreshToken = async (req, res) => {
         res.cookie("accessToken", newAccessToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: "Strict",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
             maxAge: ACCESS_TOKEN_TTL,
         });
         SuccessResponse.ok(res, null, 'Lấy access token mới thành công', { newAccessToken });
@@ -97,12 +98,12 @@ export const refreshToken = async (req, res) => {
         res.clearCookie("refreshToken", {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: "Strict",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
         });
         res.clearCookie("accessToken", {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: "Strict",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
         });
         return res.status(500).json({
             message: `Lỗi khi refresh token: ${error.message}`,

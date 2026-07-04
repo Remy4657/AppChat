@@ -29,6 +29,7 @@ export const authOptions: NextAuthOptions = {
           cookieStore.set("accessToken", accessToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
             path: "/",
             maxAge: 60 * 60 * 24, // 1 day
           });
@@ -36,6 +37,7 @@ export const authOptions: NextAuthOptions = {
           cookieStore.set("refreshToken", refreshToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
             path: "/",
             maxAge: 14 * 24 * 60 * 60, // 14 days
           });
