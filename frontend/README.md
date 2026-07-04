@@ -1,3 +1,14 @@
+## Accounts login default
+
+- username: remy1@gmail.com
+- password: 123456
+
+- username: remy2@gmail.com
+- password: 123456
+
+- username: remy3@gmail.com
+- password: 123456
+
 # ChatApp Frontend
 
 Frontend for the ChatApp real‑time messaging application, built with **Next.js 13+ (App Router)**, **React**, **Tailwind CSS**, and **Socket.io‑client**.
