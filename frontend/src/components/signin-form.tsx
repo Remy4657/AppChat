@@ -38,7 +38,7 @@ export function SigninForm() {
       const { username, password } = data;
       await signIn(username, password);
       toast.success("Đăng nhập thành công!");
-      router.push("/");
+      await router.push("/");
       // eslint-disable-next-line
     } catch (error: any) {
       toast.error(
