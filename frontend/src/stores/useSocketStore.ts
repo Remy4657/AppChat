@@ -22,7 +22,7 @@ export const useSocketStore = create<SocketState>((set, get) => ({
       auth: {
         token: localStorage.getItem("accessToken") ?? session?.accessToken, // gửi token trong phần auth của socket.io client để backend có thể xác thực người dùng khi kết nối socket, nếu không gửi token thì backend sẽ không biết người dùng nào đang kết nối
       },
-      transports: ["websocket"], // sử dụng websocket và polling để kết nối socket, nếu không có websocket thì sẽ fallback sang polling
+      transports: ["websocket", "polling"], // sử dụng websocket và polling để kết nối socket, nếu không có websocket thì sẽ fallback sang polling
     });
 
     set({ socket }); // lưu socket vào state để có thể dùng ở những nơi khác như component chat để emit join-conversation, emit send-message,...
