@@ -4,16 +4,16 @@ import { ForbiddenError, UnauthorizedError } from "../core/error.response.js";
 
 export const protectedRoute = (req, res, next) => {
 
-    //const accessToken = req.headers.authorization?.split(" ")[1];
-    const accessToken = req.cookies.accessToken;
+    const accessToken = req.headers.authorization?.split(" ")[1] //|| req.cookies.accessToken;
+    //const accessToken = req.cookies.accessToken;
 
     if (!accessToken) {
-        throw new UnauthorizedError("Vui lòng đăng nhập");
+        throw new ForbiddenError("Vui lòng đăng nhập");
     }
 
     jwt.verify(accessToken, process.env.JWT_SECRET, async (err, decodedUser) => {
         if (err) {
-            throw new UnauthorizedError("Token hết hạn hoặc không đúng");
+            throw new ForbiddenError("Token hết hạn hoặc không đúng");
         }
         const user = await User.findById(decodedUser.userId).select("-password");
         if (!user) {

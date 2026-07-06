@@ -1,5 +1,5 @@
 import api from "@/lib/axios";
-
+import axios from "axios";
 export const authService = {
   signUp: async (
     firstname: string,
@@ -38,8 +38,8 @@ export const authService = {
     return res?.data;
   },
   signIn: async (username: string, password: string) => {
-    const res = await api.post("/auth/signin", { username, password });
-
+    //const res = await api.post("/auth/signin", { username, password });
+    const res = await axios.post("/api/auth/sign-in", { username, password });
     return res?.data;
   },
   signInGoogle: async (googleIdToken: string) => {
@@ -56,8 +56,8 @@ export const authService = {
     return res?.data;
   },
   signOut: async () => {
-    const res = await api.post("/auth/signout");
-
+    //const res = await api.post("/auth/signout");
+    const res = await axios.post("/api/auth/sign-out");
     return res?.data;
   },
   fetchMe: async () => {

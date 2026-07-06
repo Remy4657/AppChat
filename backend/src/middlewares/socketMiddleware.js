@@ -3,8 +3,7 @@ import User from "../models/User.js";
 import { UnauthorizedError } from "../core/error.response.js";
 
 export const socketAuthMiddleware = async (socket, next) => {
-
-    const token = socket.handshake.auth?.token;
+    const token = socket.handshake.auth?.token; // do đã set token trong client khi kết nối socket nên có thể lấy token từ socket.handshake.auth
     if (!token) {
         throw new UnauthorizedError("Vui lòng đăng nhập");
     }

@@ -96,7 +96,6 @@ export const getConversations = async (userId) => {
         }).lean();
 
     const formatted = conversations.map((convo) => {
-        //console.log("convo: ", convo)
         const participants = (convo.participants || []).map((p) => ({
             _id: p.userId?._id,
             displayname: p.userId?.displayname,

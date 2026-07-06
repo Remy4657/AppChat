@@ -25,6 +25,8 @@ Frontend for the ChatApp real‑time messaging application, built with **Next.js
 - **State Management**: Zustand for auth state, user info, and global UI state.
 - **TypeScript**: Full type safety.
 - **Linting**: ESLint with Next.js recommended rules.
+- **Refresh Token**: Refresh token mechanism for handling token expiration and ensuring a seamless user experience.
+- **Appearance**: Dark/light mode.
 
 ## Tech Stack
 

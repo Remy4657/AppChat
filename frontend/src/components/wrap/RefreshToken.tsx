@@ -18,10 +18,8 @@ export default function RefreshTokenProvider({
   const { accessToken } = useAuthStore();
   const { connectSocket, disconnectSocket } = useSocketStore();
 
-  const refreshToken = useAuthStore((state) => state.refreshToken);
   const fetchMe = useAuthStore((state) => state.fetchMe);
   const hasInit = useRef(false); // dùng useRef để lưu trạng thái đã gọi refresh token hay chưa, nếu đã gọi rồi thì không gọi lại nữa để tránh bị lỗi vòng lặp vô hạn khi refresh token thất bại và bị chuyển hướng về trang đăng nhập liên tục
-
   const { data: session, status } = useSession();
 
   useEffect(() => {
@@ -38,6 +36,7 @@ export default function RefreshTokenProvider({
     if (hasInit.current) return;
 
     hasInit.current = true;
+
     const init = async () => {
       try {
         console.log("refresh running...");
@@ -51,10 +50,10 @@ export default function RefreshTokenProvider({
   }, []);
 
   useEffect(() => {
-    if (accessToken) {
+    if (accessToken || session?.accessToken) {
       connectSocket();
     }
     return () => disconnectSocket();
-  }, [accessToken]);
+  }, [accessToken, session?.accessToken]);
   return children;
 }

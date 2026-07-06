@@ -8,10 +8,11 @@ const app = express();
 
 const server = http.createServer(app); // Tạo server HTTP từ ứng dụng Express để Socket.IO có thể sử dụng chung cổng với Express.
 
-const io = new Server(server, {
+
+const io = new Server(server, { // Khởi tạo Socket.IO với các tùy chọn
     cors: {
-        origin: process.env.CLIENT_URL,
-        credentials: true,
+        origin: process.env.CLIENT_URL, // Cho phép kết nối từ client có URL được định nghĩa trong biến môi trường CLIENT_URL
+        credentials: true, // Cho phép gửi cookie và thông tin xác thực khác trong các yêu cầu từ client
     },
 });
 

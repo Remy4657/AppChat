@@ -7,7 +7,7 @@ Backend server for the ChatApp real-time messaging application.
 - **Authentication**: JWT-based access tokens, refresh tokens, email OTP verification, Google OAuth.
 - **Real-time Communication**: Socket.IO for instant messaging, new message, read receipts, mark seen messages.
 - **Friend Management**: Send/receive friend requests, accept/reject, view friends list.
-- **Conversations**: One‑on‑one/One-on-group chats with message persistence, media sharing.
+- **Conversations**: One‑on‑one/One-to-group chats with message persistence, media sharing.
 - **Notifications**: In‑app notifications for friend requests, etc.
 - **Media Upload**: Image and file uploads via Cloudinary.
 - **Security**: Rate limiting, CORS, cookie‑parser, Helmet, bcrypt password hashing.

@@ -37,19 +37,20 @@ export const login = async (req, res) => {
     }
     const { accessToken, refreshToken } = await authService.loginUser(req.body)
 
-    res.cookie("accessToken", accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-        maxAge: ACCESS_TOKEN_TTL,
-    });
+    // res.cookie("accessToken", accessToken, {
+    //     httpOnly: true,
+    //     secure: process.env.NODE_ENV === "production",
+    //     sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+    //     maxAge: ACCESS_TOKEN_TTL,
+    // });
+
     res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
         maxAge: REFRESH_TOKEN_TTL, // 7 ngày
     });
-    SuccessResponse.ok(res, null, 'Đăng nhập thành công', { accessToken });
+    SuccessResponse.ok(res, null, 'Đăng nhập thành công', { accessToken, refreshToken });
 }
 export const loginGoogle = async (req, res) => {
     const authHeader = req.headers.authorization;
@@ -65,7 +66,8 @@ export const loginGoogle = async (req, res) => {
 }
 export const logout = async (req, res) => {
 
-    const refreshToken = req.cookies?.refreshToken;
+    //const refreshToken = req.cookies?.refreshToken;
+    const refreshToken = req.headers['x-refresh-token'] || req.headers['refresh-token'];
 
     await authService.logoutUser(refreshToken);
 
@@ -74,25 +76,26 @@ export const logout = async (req, res) => {
         secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
     });
-    res.clearCookie("accessToken", {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+    // res.clearCookie("accessToken", {
+    //     httpOnly: true,
+    //     secure: process.env.NODE_ENV === "production",
+    //     sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
 
-    });
+    // });
     SuccessResponse.ok(res, null, 'Đăng xuất thành công');
 }
 export const refreshToken = async (req, res) => {
     try {
-        const refreshToken = req.cookies?.refreshToken;
+        //const refreshToken = req.cookies?.refreshToken;
+        const refreshToken = req.headers['x-refresh-token'] || req.headers['refresh-token'];
         const { newAccessToken } = await authService.refreshToken(refreshToken);
 
-        res.cookie("accessToken", newAccessToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-            maxAge: ACCESS_TOKEN_TTL,
-        });
+        // res.cookie("accessToken", newAccessToken, {
+        //     httpOnly: true,
+        //     secure: process.env.NODE_ENV === "production",
+        //     sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+        //     maxAge: ACCESS_TOKEN_TTL,
+        // });
         SuccessResponse.ok(res, null, 'Lấy access token mới thành công', { newAccessToken });
     } catch (error) {
         res.clearCookie("refreshToken", {

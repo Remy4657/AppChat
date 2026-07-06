@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import type { AuthState } from "@/types/store";
 import { authService } from "@/services/authService";
 import { useChatStore } from "./useChatStore";
-import { signOut } from "next-auth/react";
+import { signOut as signoutNextAuth } from "next-auth/react";
 
 export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
   devtools((set, get) => ({
@@ -12,7 +12,6 @@ export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
     user: null,
     loading: false,
     clearState: () => set({ accessToken: null, user: null, loading: false }),
-    setAccessToken: (token) => set({ accessToken: token }),
     setUser: (user) => {
       set({ user });
     },
@@ -40,7 +39,12 @@ export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
     signIn: async (username, password) => {
       set({ loading: true });
       try {
-        await authService.signIn(username, password);
+        const { accessToken, refreshToken } = await authService.signIn(
+          username,
+          password,
+        );
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("refreshToken", refreshToken);
         await get().fetchMe();
         useChatStore.getState().fetchConversations();
       } catch (error) {
@@ -52,9 +56,11 @@ export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
 
     signOut: async () => {
       try {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        await signoutNextAuth({ redirect: false });
         get().clearState(); // xóa state ngay lập tức để tránh trường hợp token cũ vẫn còn trong state khi signOut thất bại, tuy nhiên nếu signOut thất bại thì token cũng sẽ bị backend invalidate nên cũng không ảnh hưởng gì
         useChatStore.getState().reset();
-        await signOut({ redirect: false });
         await authService.signOut();
       } catch (error) {
         throw error; // để component biết đăng nhập thất bại, không throw new vì đã có interceptor của axios handle rồi
@@ -73,11 +79,10 @@ export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
     },
     refreshToken: async () => {
       try {
-        const { fetchMe } = get();
-
-        set({ loading: true });
+        //const { fetchMe } = get();
+        //set({ loading: true });
         // luôn fetch me sau khi refresh token để cập nhật thông tin user mới nhất vì khi refresh trang thì data lưu trong zudtand sẽ bị mất
-        await fetchMe();
+        //await fetchMe();
       } catch (error) {
         get().signOut(); // xóa state và gọi api sign out để invalidate token ở backend nếu refresh token thất bại
         toast.error("Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại: ");

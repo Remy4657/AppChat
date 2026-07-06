@@ -6,7 +6,8 @@ import User from "../models/User.js";
 export const fetchMe = async (req, res) => {
 
     const user = req.user; // Thông tin người dùng đã được xác thực từ middleware
-    const accessToken = req.cookies?.accessToken
+    const accessToken = req.headers.authorization?.split(" ")[1];
+    //const accessToken = req.cookies?.accessToken
     SuccessResponse.ok(res, null, null, { user, accessToken });
 }
 export const searchUserByUsername = async (req, res) => {

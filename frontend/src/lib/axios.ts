@@ -1,11 +1,34 @@
 import axios from "axios";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { authService } from "@/services/authService";
+import { getSession } from "next-auth/react";
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true,
 });
+
+api.interceptors.request.use(
+  async (config) => {
+    const session = await getSession();
+    if (config.url?.includes("/auth/signin-google")) {
+      return config; // Không thêm gì, giữ nguyên header do bạn set
+    }
+    const accessToken =
+      localStorage.getItem("accessToken") || session?.accessToken;
+    const refreshToken =
+      localStorage.getItem("refreshToken") || session?.refreshToken;
+
+    if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;
+    // Gửi refreshToken trong header tùy chỉnh (ví dụ: x-refresh-token)
+    if (refreshToken) {
+      config.headers["x-refresh-token"] = refreshToken;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error),
+);
+
 // Response interceptor
 // tự động gọi refresh api khi access token hết hạn
 api.interceptors.response.use(
@@ -31,7 +54,8 @@ api.interceptors.response.use(
           originalRequest._retryCount += 1;
 
           try {
-            await authService.refreshToken();
+            const { newAccessToken } = await authService.refreshToken();
+            localStorage.setItem("accessToken", newAccessToken);
             return api(originalRequest); // retry lại request cũ với access token mới
           } catch (error) {
             useAuthStore.getState().signOut();

@@ -26,13 +26,13 @@ export const authOptions: NextAuthOptions = {
         if (accessToken && refreshToken) {
           const cookieStore = await cookies();
 
-          cookieStore.set("accessToken", accessToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-            path: "/",
-            maxAge: 60 * 60 * 24, // 1 day
-          });
+          // cookieStore.set("accessToken", accessToken, {
+          //   httpOnly: true,
+          //   secure: process.env.NODE_ENV === "production",
+          //   sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+          //   path: "/",
+          //   maxAge: 60 * 60 * 24, // 1 day
+          // });
 
           cookieStore.set("refreshToken", refreshToken, {
             httpOnly: true,
@@ -41,12 +41,15 @@ export const authOptions: NextAuthOptions = {
             path: "/",
             maxAge: 14 * 24 * 60 * 60, // 14 days
           });
+          token.accessToken = accessToken;
+          token.refreshToken = refreshToken;
         }
       }
-
       return token;
     },
-    async session({ session }) {
+    async session({ session, token }) {
+      session.accessToken = token.accessToken as string;
+      session.refreshToken = token.refreshToken as string;
       return session;
     },
   },
