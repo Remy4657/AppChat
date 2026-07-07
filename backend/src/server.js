@@ -42,7 +42,6 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 //public route
 app.use("/api/auth", authRoute)
 app.use("/api/otp", otpRoute)
-app.use("/api/", smtpRoute)
 
 //private route
 //app.use(protectedRoute)

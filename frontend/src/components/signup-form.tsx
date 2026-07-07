@@ -13,7 +13,7 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useRef, useState } from "react";
-import { Spinner } from "./ui/spinner";
+import { Spinner } from "@/components/ui/spinner";
 
 const userInfoSchema = z.object({
   firstname: z.string().min(1, "Tên bắt buộc phải có"),

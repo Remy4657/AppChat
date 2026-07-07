@@ -1,26 +1,23 @@
-import nodemailer from "nodemailer"
+import { BrevoClient } from '@getbrevo/brevo';
 import dotenv from "dotenv"
 dotenv.config()
 
-// Tạo transporter (dùng Gmail)
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
+
+
+//const resend = new Resend(process.env.RESEND_KEY);
+
+const brevo = new BrevoClient({
+  apiKey: process.env.BREVO_API_KEY,
 });
 
-
 export const sendOTPEmail = async (to, otp, subject = 'Mã OTP xác thực tài khoản') => {
+
   const htmlContent = `
     <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto;">
       <h2 style="color: #333;">Xác thực tài khoản</h2>
       <p>Chào bạn,</p>
       <p>Mã OTP của bạn là:</p>
-      <h1 style="background: #f4f4f4; padding: 16px; text-align: center; letter-spacing: 4px; border-radius: 8px;">
+      <h1 style="background: #f4f4f4; padding: 8px; text-align: center; letter-spacing: 4px; border-radius: 8px;">
         <strong>${otp}</strong>
       </h1>
       <p>Mã có hiệu lực trong <strong>1 phút</strong>. Vui lòng không chia sẻ mã này với bất kỳ ai.</p>
@@ -30,20 +27,22 @@ export const sendOTPEmail = async (to, otp, subject = 'Mã OTP xác thực tài 
     </div>
   `;
 
-  await transporter.sendMail({
-    from: "no-reply@gmail.com",
-    to,
+  // const { data } = resend.emails.send({
+  //   from: 'trongdatga@gmail.com',
+  //   to,
+  //   subject,
+  //   html: htmlContent
+  // });
+  // console.log("data email: ", data)
+  // console.log(`Email ${data.id} with custom HTML content has been sent.`);
+
+  const result = await brevo.transactionalEmails.sendTransacEmail({
     subject,
-    html: htmlContent,
-  },
-    (err, info) => {
-      if (err) {
-        console.error("error: ", err);
-        return;
-      }
-      console.log(info.envelope);
-      console.log(info.messageId);
-    }
-  );
+    textContent: htmlContent,
+    sender: { name: "No-reply", email: "trongdatga@gmail.com" },
+    to: [{ email: to }]
+  });
+
+  console.log('Email sent:', result);
 };
 

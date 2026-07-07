@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { toast } from "sonner";
 import { signIn as nextAuthSignin } from "next-auth/react";
-import { Spinner } from "./ui/spinner";
+import { Spinner } from "@/components/ui/spinner";
 import { useState } from "react";
 
 const signInSchema = z.object({
