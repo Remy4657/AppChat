@@ -46,7 +46,7 @@ export const useAuthStore = create<AuthState, [["zustand/devtools", never]]>(
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
         await get().fetchMe();
-        useChatStore.getState().fetchConversations();
+        await useChatStore.getState().fetchConversations();
       } catch (error) {
         throw error; // để component biết đăng nhập thất bại, không throw new vì cần lấy lỗi từ response của server để hiển thị thông báo lỗi chính xác
       } finally {

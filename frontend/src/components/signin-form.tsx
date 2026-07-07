@@ -38,7 +38,12 @@ export function SigninForm() {
       const { username, password } = data;
       await signIn(username, password);
       toast.success("Đăng nhập thành công!");
-      await router.push("/");
+      // if (typeof window !== "undefined") {
+      //   window.location.href = "/";
+      // }
+      // router.push("/");
+      // router.refresh();
+      router.replace("/");
       // eslint-disable-next-line
     } catch (error: any) {
       toast.error(
