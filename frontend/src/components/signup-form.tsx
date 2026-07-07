@@ -13,6 +13,7 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useRef, useState } from "react";
+import { Spinner } from "./ui/spinner";
 
 const userInfoSchema = z.object({
   firstname: z.string().min(1, "Tên bắt buộc phải có"),
@@ -268,13 +269,17 @@ export function SignupForm({
                     disabled={isSubmitting}
                   >
                     Tạo tài khoản
+                    {isSubmitting && <Spinner className="ml-2" />}
                   </Button>
 
                   <div className="text-center text-sm">
                     Đã có tài khoản?{" "}
-                    <a href="/signin" className="underline underline-offset-4">
+                    <Link
+                      href="/signin"
+                      className={`underline underline-offset-4 ${isSubmitting ? "pointer-events-none opacity-50" : ""}`}
+                    >
                       Đăng nhập
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -346,9 +351,12 @@ export function SignupForm({
                     <Button
                       type="submit"
                       className="w-24 m-auto"
-                      disabled={canResend}
+                      disabled={otpForm.formState.isSubmitting || canResend}
                     >
                       Xác nhận
+                      {otpForm.formState.isSubmitting && (
+                        <Spinner className="ml-2" />
+                      )}
                     </Button>
 
                     <div className="m-auto text-status-offline">

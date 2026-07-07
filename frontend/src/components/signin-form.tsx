@@ -13,6 +13,8 @@ import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { toast } from "sonner";
 import { signIn as nextAuthSignin } from "next-auth/react";
+import { Spinner } from "./ui/spinner";
+import { useState } from "react";
 
 const signInSchema = z.object({
   username: z.string().min(3, "Tên đăng nhập phải có ít nhất 3 ký tự"),
@@ -33,6 +35,8 @@ export function SigninForm() {
   const router = useRouter();
   const signIn = useAuthStore((state) => state.signIn);
 
+  const [isSubmitGoogle, setIsSubmitGoogle] = useState(false);
+
   const onSubmit = async (data: SignInFormValues) => {
     try {
       const { username, password } = data;
@@ -41,9 +45,8 @@ export function SigninForm() {
       // if (typeof window !== "undefined") {
       //   window.location.href = "/";
       // }
-      // router.push("/");
-      // router.refresh();
-      router.replace("/");
+      router.push("/");
+      router.refresh();
       // eslint-disable-next-line
     } catch (error: any) {
       toast.error(
@@ -52,6 +55,7 @@ export function SigninForm() {
     }
   };
   const handleGoogleLogin = () => {
+    setIsSubmitGoogle(true);
     nextAuthSignin("google");
   };
 
@@ -72,10 +76,6 @@ export function SigninForm() {
                     loading="eager"
                   />
                 </Link>
-
-                {/* <h1 className="text-2xl font-bold">
-                  Đăng nhập để bắt đầu trò chuyện
-                </h1> */}
                 <p className="text-muted-foreground text-balance">
                   Đăng nhập để bắt đầu trò chuyện
                 </p>
@@ -115,8 +115,13 @@ export function SigninForm() {
                 )}
               </div>
               {/* nút đăng nhập */}
-              <Button type="submit" className="w-full" disabled={isSubmitting}>
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={isSubmitting || isSubmitGoogle}
+              >
                 Đăng nhập
+                {isSubmitting && <Spinner className="ml-2" />}
               </Button>
               <div className="flex items-center my-3 m-auto">
                 <div className="border-t border-gray-300 w-20"></div>
@@ -127,7 +132,7 @@ export function SigninForm() {
                 type="button"
                 variant="outline"
                 className="w-full"
-                disabled={isSubmitting}
+                disabled={isSubmitGoogle || isSubmitting}
                 onClick={handleGoogleLogin}
               >
                 <Image
@@ -138,12 +143,16 @@ export function SigninForm() {
                   height={20}
                 />
                 Đăng nhập với Google
+                {isSubmitGoogle && <Spinner className="ml-2" />}
               </Button>
               <div className="text-center text-sm mt-9">
                 Chưa có tài khoản?{" "}
-                <a href="/signup" className="underline underline-offset-4">
+                <Link
+                  href="/signup"
+                  className={`underline underline-offset-4 ${isSubmitting || isSubmitGoogle ? "pointer-events-none opacity-50" : ""}`}
+                >
                   Đăng ký
-                </a>
+                </Link>
               </div>
             </div>
           </form>

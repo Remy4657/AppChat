@@ -15,6 +15,7 @@ import messageRoute from "./routes/messageRoutes.js"
 import conversationRoute from "./routes/conversationRoute.js"
 import notificationRoute from "./routes/notificationRoute.js"
 import otpRoute from "./routes/otpRoutes.js"
+import smtpRoute from "./routes/smtpRoutes.js"
 
 import { protectedRoute } from "./middlewares/authMiddleware.js"
 import { app, server } from "./socket/index.js"
@@ -41,6 +42,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 //public route
 app.use("/api/auth", authRoute)
 app.use("/api/otp", otpRoute)
+app.use("/api/", smtpRoute)
 
 //private route
 //app.use(protectedRoute)
