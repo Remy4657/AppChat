@@ -88,7 +88,7 @@ export function SigninForm() {
                 <Input
                   type="text"
                   id="username"
-                  placeholder="username"
+                  placeholder="remy2@gmail.com"
                   {...register("username")}
                 />
                 {errors.username && (
@@ -105,7 +105,7 @@ export function SigninForm() {
                 <Input
                   type="password"
                   id="password"
-                  placeholder="password"
+                  placeholder="123456"
                   {...register("password")}
                 />
                 {errors.password && (
